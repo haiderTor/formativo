@@ -1,7 +1,35 @@
-export default function PrincipalPage() {
+import { NavLink } from "react-router-dom";
+
+export default function Navegacion() {
     return (
-        <div className="w-full m-0 h-full flex items-center justify-center bg-gradient-to-r from-green-100 via-green-200 to-green-300">
-            <h1 className="text-4xl font-bold text-gray-800">Página Principal</h1>
-        </div>
+        <nav className="bg-blue-600 text-white px-6 py-4 shadow-md">
+        <ul className="flex flex-col space-y-4">
+            <li>
+            <NavLink to="/tablero" className={({ isActive }) => isActive ? "font-bold underline" : ""}>
+                Tablero
+            </NavLink>
+            </li>
+            <li>
+            <NavLink to="/inventario" className={({ isActive }) => isActive ? "font-bold underline" : ""}>
+                Inventario
+            </NavLink>
+            </li>
+            <li>
+            <NavLink to="/personal" className={({ isActive }) => isActive ? "font-bold underline" : ""}>
+                Personal
+            </NavLink>
+            </li>
+            <li>
+            <NavLink to="/historial" className={({ isActive }) => isActive ? "font-bold underline" : ""}>
+                Historial
+            </NavLink>
+            </li>
+            <li>
+            <NavLink to="/ajustes" className={({ isActive }) => isActive ? "font-bold underline" : ""}>
+                Ajustes
+            </NavLink>
+            </li>
+        </ul>
+        </nav>
     );
 }

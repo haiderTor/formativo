@@ -110,10 +110,6 @@ app.post('/routes/clientes', async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
-/* lo que sea*/
-=======
-
 app.post('/routes/empleado', async (req, res) => {
     const { nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;
 

@@ -140,8 +140,6 @@ app.post('/routes/empleado', async (req, res) => {
 });
 
 
-
->>>>>>> eb3318826ebcfbfc5780c43f8713c388bfdca376
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor ejecutándose en el puerto ${PORT}`);

@@ -1,22 +1,35 @@
-export default function PrincipalPage() {
-    return (
-            <div className="h-screen flex bg-gray-100">
-                <aside className="w-64 bg-blue-700 text-white flex flex-col p-6">
-                    <h1 className="text-2xl font-bold mb-8">Menú</h1>
-                    <nav className="flex flex-col space-y-4">
-                    <a href="#" className="hover:bg-blue-600 px-4 py-2 rounded">Home</a>
-                    <a href="#" className="hover:bg-blue-600 px-4 py-2 rounded">Inventario</a>
-                    <a href="#" className="hover:bg-blue-600 px-4 py-2 rounded">Historial</a>
-                    <a href="#" className="hover:bg-blue-600 px-4 py-2 rounded">Ajustes</a>
-                    </nav>
-                </aside>
+import { NavLink } from "react-router-dom";
 
-                <main className="flex-1 p-10">
-                    <h2 className="text-3xl font-semibold text-gray-800 mb-6">Bienvenido</h2>
-                    <p className="text-gray-600">
-                    Aquí irá el contenido principal de tu página de inicio.
-                    </p>
-                </main>
-            </div>
+export default function Navegacion() {
+    return (
+        <nav className="bg-blue-600 text-white px-6 py-4 shadow-md">
+        <ul className="flex flex-col space-y-4">
+            <li>
+            <NavLink to="/tablero" className={({ isActive }) => isActive ? "font-bold underline" : ""}>
+                Tablero
+            </NavLink>
+            </li>
+            <li>
+            <NavLink to="/inventario" className={({ isActive }) => isActive ? "font-bold underline" : ""}>
+                Inventario
+            </NavLink>
+            </li>
+            <li>
+            <NavLink to="/personal" className={({ isActive }) => isActive ? "font-bold underline" : ""}>
+                Personal
+            </NavLink>
+            </li>
+            <li>
+            <NavLink to="/historial" className={({ isActive }) => isActive ? "font-bold underline" : ""}>
+                Historial
+            </NavLink>
+            </li>
+            <li>
+            <NavLink to="/ajustes" className={({ isActive }) => isActive ? "font-bold underline" : ""}>
+                Ajustes
+            </NavLink>
+            </li>
+        </ul>
+        </nav>
     );
 }

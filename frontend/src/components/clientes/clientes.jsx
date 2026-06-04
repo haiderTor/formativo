@@ -12,6 +12,9 @@ export default function ClienteForm() {
     ciudad: ""
   });
 
+  const [mensaje, setMensaje] = useState(null);
+  const [error, setError] = useState(null);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -19,12 +22,42 @@ export default function ClienteForm() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Datos del cliente:", formData);
-    // Aquí podrías enviar los datos al backend con fetch/axios
+    setMensaje(null);
+    setError(null);
+
+    try {
+      const response = await fetch("http://localhost:3000/routes/clientes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al registrar el cliente");
+      }
+
+      const data = await response.json();
+      console.log("Cliente registrado:", data);
+      setMensaje("Cliente registrado correctamente ✅");
+      setFormData({
+        tipo_documento: "",
+        documento: "",
+        nombres: "",
+        apellidos: "",
+        telefono: "",
+        correo: "",
+        direccion: "",
+        ciudad: ""
+      });
+    } catch (err) {
+      console.error(err);
+      setError("No se pudo registrar el cliente ❌");
+    }
   };
-return (
+
+  return (
     <form
       onSubmit={handleSubmit}
       className="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6 space-y-4"
@@ -122,6 +155,9 @@ return (
           className="w-full border rounded px-3 py-2"
         />
       </div>
+
+      {mensaje && <p className="text-green-600 text-sm">{mensaje}</p>}
+      {error && <p className="text-red-600 text-sm">{error}</p>}
 
       <button
         type="submit"

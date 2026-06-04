@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const [correo, setCorreo] = useState("");
@@ -11,16 +12,16 @@ export default function LoginPage() {
   const [contrasenaRegistro, setContrasenaRegistro] = useState("");
   const [verificacion, setVerificacion] = useState("");
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:3000/routes/usuario", {
+      const response = await fetch("http://localhost:3000/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo, contrasena }),
       });
 
@@ -30,6 +31,8 @@ export default function LoginPage() {
 
       const data = await response.json();
       console.log("Respuesta del servidor:", data);
+
+      navigate("/tablero");
     } catch (err) {
       setError(err.message);
     }
@@ -45,9 +48,7 @@ export default function LoginPage() {
     try {
       const response = await fetch("http://localhost:3000/routes/usuario", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           nombre,
           nombre_usuario: usuario,
@@ -62,7 +63,9 @@ export default function LoginPage() {
 
       const data = await response.json();
       console.log("Usuario registrado:", data);
+
       setShowModal(false);
+      navigate("/");
     } catch (err) {
       alert(err.message);
     }

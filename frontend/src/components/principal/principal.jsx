@@ -20,6 +20,11 @@ export default function Navegacion() {
             </NavLink>
             </li>
             <li>
+            <NavLink to="/clientes" className={({ isActive }) => isActive ? "font-bold underline" : ""}>
+                Clientes
+            </NavLink>
+            </li>
+            <li>
             <NavLink to="/historial" className={({ isActive }) => isActive ? "font-bold underline" : ""}>
                 Historial
             </NavLink>

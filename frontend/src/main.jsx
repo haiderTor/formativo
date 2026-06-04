@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 
 //import LoginPage from './components/login/login.jsx'
-import App from './components/App'
+import App from './App'
 
 
 createRoot(document.getElementById('root')).render(

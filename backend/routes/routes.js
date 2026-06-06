@@ -135,6 +135,27 @@ app.post('/routes/empleado', async (req, res) => {
     }
 });
 
+app.post('/routes/equipo', async (req, res) => {
+    const{tipo_equipo,modelo,referencia,numero_serie,estado,marca_id,cliente_id} = req.body
+
+    try {
+        const query = await pool.query('INSERT INTO equipo(tipo_equipo,modelo,referencia,numero_serie,estado,marca_id,cliente_id) VALUES($1, $2, $3,$4, $5, $6, $7) RETURNING *',[tipo_equipo,modelo,referencia,numero_serie,estado,marca_id,cliente_id]);
+        res.status(201).json({  
+            success: true,
+            message: 'Data inserted successfully',
+            data: query.rows[0]
+        });
+        console.log('item registrado correctamente:', query.rows[0]);
+        
+    } catch (error) {
+        console.error('Error inserting data:', error);
+        res.status(500).json({ 
+            success: false,
+            error: 'Internal Server Error' 
+        });
+    }
+});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

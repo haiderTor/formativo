@@ -34,6 +34,11 @@ export default function Navegacion() {
                 Ajustes
             </NavLink>
             </li>
+            <li>
+            <NavLink to="/equipo" className={({ isActive }) => isActive ? "font-bold underline" : ""}>
+                equipo
+            </NavLink>
+            </li>
         </ul>
         </nav>
     );

@@ -4,6 +4,7 @@ import LoginPage from "./components/login/login.jsx";
 import Tablero from "./components/principal/principal.jsx";
 import Personal from "./components/personal/personal.jsx";
 import Clientes from "./components/clientes/clientes.jsx";
+import EquipoForm from "./components/equipo/equipo.jsx";
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
             <Route path="/tablero" element={<Tablero />} />
             <Route path="/personal" element={<Personal />} />
             <Route path="/clientes" element={<Clientes />} />
+            <Route path="/equipo" element={<EquipoForm />} />
             </Routes>
         </BrowserRouter>
         </div>

@@ -31,3 +31,5 @@ Thumbs.db
 
 # Estado de pnpm
 .pnpm-workspace-state-v1.json
+frontend/package.json
+frontend/pnpm-lock.yaml

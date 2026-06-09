@@ -49,7 +49,7 @@ export default function EmpleadoForm() {
     return (
         <form
         onSubmit={handleSubmit}
-        className="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6 space-y-4"
+        className="max-w-lg mx-auto bg-[#191a1d] shadow-md rounded-lg p-6 space-y-4"
         >
         <h2 className="text-xl font-bold mb-4">Registrar Empleado</h2>
 

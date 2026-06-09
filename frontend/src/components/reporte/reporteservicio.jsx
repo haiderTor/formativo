@@ -56,7 +56,7 @@ export default function ReporteServicios() {
             <PDFDownloadLink document={<ReporteServiciosDoc servicios={servicios} />} fileName="servicios.pdf">
                 {({ loading }) => (
                     <button
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md shadow-md transition duration-200"
+                        className="px-4 py-2 bg-blue-700 hover:bg-blue-700 text-white font-semibold rounded-md shadow-md transition duration-200"
                     >
                         {loading ? "Generando..." : "Descargar Reporte de Servicios"}
                     </button>

@@ -47,37 +47,37 @@ export default function Navegacion() {
                 </li>
                 <li>
                     <NavLink
-                        to="/reporte" className={({ isActive }) => (isActive ? "font-bold underline" : "")}>
+                        to="/reporte" className={({ isActive }) => (isActive ? "font-bold" : "")}>
                         Reportes
                     </NavLink>
                 </li>
                 <li>
                     <NavLink
-                        to="/reporteclientes" className={({ isActive }) => (isActive ? "font-bold underline" : "")}>
+                        to="/reporteclientes" className={({ isActive }) => (isActive ? "font-bold" : "")}>
                         Reporte Clientes
                     </NavLink>
                 </li>
                 <li>
                     <NavLink
-                        to="/reporteequipos" className={({ isActive }) => (isActive ? "font-bold underline" : "")}>
+                        to="/reporteequipos" className={({ isActive }) => (isActive ? "font-bold" : "")}>
                         Reporte Equipos
                     </NavLink>
                 </li>
                 <li>
                     <NavLink
-                        to="/reporteticket" className={({ isActive }) => (isActive ? "font-bold underline" : "")}>
+                        to="/reporteticket" className={({ isActive }) => (isActive ? "font-bold" : "")}>
                         Reporte Tickets
                     </NavLink>
                 </li>
                 <li>
                     <NavLink
-                        to="/reportefactura" className={({ isActive }) => (isActive ? "font-bold underline" : "")}>
+                        to="/reportefactura" className={({ isActive }) => (isActive ? "font-bold" : "")}>
                         Reporte Facturas
                     </NavLink>
                 </li>
                 <li>
                     <NavLink
-                        to="/reporteservicio" className={({ isActive }) => (isActive ? "font-bold underline" : "")}>
+                        to="/reporteservicio" className={({ isActive }) => (isActive ? "font-bold" : "")}>
                         Reporte Servicios
                     </NavLink>
                 </li>

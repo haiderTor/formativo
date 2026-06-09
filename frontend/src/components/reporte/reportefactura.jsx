@@ -57,7 +57,7 @@ export default function ReporteFacturas() {
             <PDFDownloadLink document={<ReporteFacturasDoc facturas={facturas} />} fileName="facturas.pdf">
                 {({ loading }) => (
                     <button
-                        className="px-4 py-2 bg-purple-600 hover:bg-blue-700 text-white font-semibold rounded-md shadow-md transition duration-200"
+                        className="px-4 py-2 bg-blue-700 hover:bg-blue-700 text-white font-semibold rounded-md shadow-md transition duration-200"
                     >
                         {loading ? "Generando..." : "Descargar Reporte de Facturas"}
                     </button>

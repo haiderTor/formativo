@@ -8,6 +8,10 @@ import Clientes from "./components/clientes/clientes.jsx";
 import EquipoForm from "./components/equipo/equipo.jsx";
 import Reporte from "./components/reporte/ReporteDemo.jsx";
 import Reporteclientes from "./components/reporte/reporteclientes.jsx";
+import Reporteequipos from "./components/reporte/reporteequipos.jsx";
+import Reporteticket from "./components/reporte/reporteticket.jsx";
+import Reportefactura from "./components/reporte/reportefactura.jsx";
+import Reporteservicio from "./components/reporte/reporteservicio.jsx";
 
 
 
@@ -29,6 +33,10 @@ function App() {
                 <Route path="equipo" element={<EquipoForm />} />
                 <Route path="reporte" element={<Reporte />} />
                 <Route path="reporteclientes" element={<Reporteclientes />} />
+                <Route path="reporteequipos" element={<Reporteequipos />} />
+                <Route path="reporteticket" element={<Reporteticket />} />
+                <Route path="reportefactura" element={<Reportefactura />} />
+                <Route path="reporteservicio" element={<Reporteservicio />} />
             </Route>
             </Routes>
         </BrowserRouter>

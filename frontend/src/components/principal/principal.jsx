@@ -56,7 +56,32 @@ export default function Navegacion() {
                         Reporte Clientes
                     </NavLink>
                 </li>
+                <li>
+                    <NavLink
+                        to="/reporteequipos" className={({ isActive }) => (isActive ? "font-bold underline" : "")}>
+                        Reporte Equipos
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink
+                        to="/reporteticket" className={({ isActive }) => (isActive ? "font-bold underline" : "")}>
+                        Reporte Tickets
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink
+                        to="/reportefactura" className={({ isActive }) => (isActive ? "font-bold underline" : "")}>
+                        Reporte Facturas
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink
+                        to="/reporteservicio" className={({ isActive }) => (isActive ? "font-bold underline" : "")}>
+                        Reporte Servicios
+                    </NavLink>
+                </li>
             </ul>
+            
             </nav>
 
             <div className="flex-1 p-6 bg-white">

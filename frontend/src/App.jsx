@@ -27,6 +27,8 @@ function App() {
                 <Route path="personal" element={<Personal />} />
                 <Route path="clientes" element={<Clientes />} />
                 <Route path="equipo" element={<EquipoForm />} />
+                <Route path="reporte" element={<Reporte />} />
+                <Route path="reporteclientes" element={<Reporteclientes />} />
             </Route>
             </Routes>
         </BrowserRouter>

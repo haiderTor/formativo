@@ -44,6 +44,18 @@ export default function Navegacion() {
                     equipo
                 </NavLink>
                 </li>
+                <li>
+                    <NavLink
+                        to="/reporte" className={({ isActive }) => (isActive ? "font-bold underline" : "")}>
+                        Reportes
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink
+                        to="/reporteclientes" className={({ isActive }) => (isActive ? "font-bold underline" : "")}>
+                        Reporte Clientes
+                    </NavLink>
+                </li>
             </ul>
             </nav>
 

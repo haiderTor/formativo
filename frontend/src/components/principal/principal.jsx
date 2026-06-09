@@ -3,6 +3,7 @@ import { NavLink, Outlet } from "react-router-dom";
 export default function Navegacion() {
     return (
         <div className="flex flex-row w-full h-screen bg-[#121316]">
+
             <nav className="text-white w-36 p-6">
             <ul className="flex flex-col space-y-5">
                 <li>
@@ -84,13 +85,10 @@ export default function Navegacion() {
             
             </nav>
 
-            <div className="flex-1 p-6 bg-white">
+            <div className="flex-1 p-6">
                 <Outlet />
             </div>
-
 
         </div>
     );
 }
-
-

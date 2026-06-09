@@ -6,11 +6,16 @@ import Tablero from "./components/tablero/tablero.jsx";
 import Personal from "./components/login/personal/personal.jsx";
 import Clientes from "./components/clientes/clientes.jsx";
 import EquipoForm from "./components/equipo/equipo.jsx";
+import Reporte from "./components/reporte/ReporteDemo.jsx";
+import Reporteclientes from "./components/reporte/reporteclientes.jsx";
+
+
+
+
 
 
 function App() {
     return (
-        <div className="flex flex-row min-h-screen bg-gray-100">
         <BrowserRouter>
             <Routes>
     {/* Ruta independiente para login */}
@@ -25,7 +30,6 @@ function App() {
             </Route>
             </Routes>
         </BrowserRouter>
-        </div>
     );
 }
 

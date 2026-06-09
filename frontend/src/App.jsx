@@ -2,7 +2,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./components/login/login.jsx";
 import Tablero from "./components/principal/principal.jsx";
-import Personal from "./components/personal/personal.jsx";
+import Personal from "./components/login/personal/personal.jsx";
 import Clientes from "./components/clientes/clientes.jsx";
 import EquipoForm from "./components/equipo/equipo.jsx";
 import Reporte from "./components/reporte/ReporteDemo.jsx";

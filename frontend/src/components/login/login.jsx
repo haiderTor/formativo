@@ -28,10 +28,6 @@ export default function LoginPage() {
       if (!response.ok) {
         throw new Error("Credenciales inválidas");
       }
-
-      const data = await response.json();
-      console.log("Respuesta del servidor:", data);
-
       navigate("/tablero");
     } catch (err) {
       setError(err.message);

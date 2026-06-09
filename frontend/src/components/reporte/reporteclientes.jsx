@@ -3,31 +3,26 @@ import { Page, Text, View, Document, StyleSheet, PDFDownloadLink } from "@react-
 
 const styles = StyleSheet.create({
     page: {
-        padding: 30,     // 👉 margen interno en todos los lados
-        // aumentar (ej. 50) → más espacio en blanco alrededor
-        // disminuir (ej. 10) → contenido más pegado al borde
+        padding: 30,
     },
     title: {
         fontSize: 18,
-        marginBottom: 15, // 👉 espacio debajo del título
+        marginBottom: 15,
         textAlign: "center"
     },
     table: {
         display: "table",
         width: "100%",
-        marginTop: 20 // 👉 espacio entre el título y la tabla
+        marginTop: 20
     },
     row: {
-        flexwrap: "nowrap",
         flexDirection: "row",
         borderBottom: "1px solid #000"
     },
     cell: {
-        display: "flex",
-        flexwrap: "nowrap",
         flex: 1,
         minWidth: 80,
-        padding: 4,       // 👉 espacio interno dentro de cada celda
+        padding: 4,
         fontSize: 8,
         textAlign: "left",
         lineHeight: 1.3
@@ -43,23 +38,21 @@ const styles = StyleSheet.create({
     },
 });
 
-
-
 const ReporteClientesDoc = ({ clientes }) => (
     <Document>
         <Page size="A4" style={styles.page}>
-            <Text>Reporte de Clientes</Text>
+            <Text style={styles.title}>Reporte de Clientes</Text>
             <View style={styles.table}>
                 <View style={styles.row}>
-                    <Text style={styles.cell}>Nombre</Text>
-                    <Text style={styles.cell}>Tipo de documento</Text>
-                    <Text style={styles.cell}>Documento</Text>
-                    <Text style={styles.cell}>Telefono</Text>
-                    <Text style={styles.cell}>Correo</Text>
-                    <Text style={styles.cell}>Dirección</Text>
-                    <Text style={styles.cell}>Ciudad</Text>
+                    <Text style={styles.headerCell}>Nombre</Text>
+                    <Text style={styles.headerCell}>Tipo de documento</Text>
+                    <Text style={styles.headerCell}>Documento</Text>
+                    <Text style={styles.headerCell}>Teléfono</Text>
+                    <Text style={styles.headerCell}>Correo</Text>
+                    <Text style={styles.headerCell}>Dirección</Text>
+                    <Text style={styles.headerCell}>Ciudad</Text>
                 </View>
-                {clientes.map(c => (
+                {Array.isArray(clientes) && clientes.map(c => (
                     <View style={styles.row} key={c.cliente_id}>
                         <Text style={styles.cell}>{c.nombres} {c.apellidos}</Text>
                         <Text style={styles.cell}>{c.tipo_documento}</Text>
@@ -81,14 +74,23 @@ export default function ReporteClientes() {
     useEffect(() => {
         fetch("http://localhost:3000/routes/reporteclientes")
             .then(res => res.json())
-            .then(data => setClientes(data));
-
+            .then(data => {
+                if (Array.isArray(data)) setClientes(data);
+                else console.error("Respuesta inesperada:", data);
+            })
+            .catch(err => console.error("Error al obtener clientes:", err));
     }, []);
 
     return (
-        <div>
+        <div className="flex justify-center mt-6">
             <PDFDownloadLink document={<ReporteClientesDoc clientes={clientes} />} fileName="clientes.pdf">
-                {({ loading }) => (loading ? "Generando..." : "Descargar Reporte de Clientes")}
+                {({ loading }) => (
+                    <button
+                        className="px-4 py-2 bg-blue-700 hover:bg-indigo-700 text-white font-semibold rounded-md shadow-md transition duration-200"
+                    >
+                        {loading ? "Generando..." : "Descargar Reporte de Clientes"}
+                    </button>
+                )}
             </PDFDownloadLink>
         </div>
     );

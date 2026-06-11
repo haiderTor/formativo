@@ -169,11 +169,11 @@ app.get('/routes/reporteclientes', async (req, res) => {
 app.get('/routes/reporteequipos', async (req, res) => {
     try {
         const result = await pool.query(`
-      SELECT e.equipo_id, e.tipo_equipo, e.modelo, e.referencia, e.numero_serie,
-             e.estado, m.nombre AS nombre_marca, c.nombres, c.apellidos
-      FROM equipo e
-      JOIN marca m ON e.marca_id = m.marca_id
-      JOIN clientes c ON e.cliente_id = c.cliente_id
+        SELECT e.equipo_id, e.tipo_equipo, e.modelo, e.referencia, e.numero_serie,
+                e.estado, m.nombre AS nombre_marca, c.nombres, c.apellidos
+        FROM equipo e
+        JOIN marca m ON e.marca_id = m.marca_id
+        JOIN clientes c ON e.cliente_id = c.cliente_id
     `);
         res.json(result.rows);
     } catch (error) {

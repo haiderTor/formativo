@@ -391,7 +391,7 @@ app.get('/routes/reportefacturafiltrado', async (req, res) => {
                 c.nombres AS cliente_nombre, 
                 c.apellidos AS cliente_apellido,
                 t.ticket_id
-            FROM factura f
+            FROM factura f 
             JOIN clientes c ON f.cliente_id = c.cliente_id
             JOIN ticket t ON f.ticket_id = t.ticket_id
             WHERE f.cliente_id = $1
@@ -473,3 +473,5 @@ app.listen(PORT, () => {
     console.log(`Servidor ejecutándose en el puerto ${PORT}`);
 });
 
+
+//hola mundo

@@ -26,18 +26,18 @@ function App() {
                 <Route path="/" element={<LoginPage />} />
 
     {/* Layout con Nav + Outlet */}
-            <Route path="/app" element={<Principal />}>
-                <Route index element={<Tablero />} />
-                <Route path="personal" element={<Personal />} />
-                <Route path="clientes" element={<Clientes />} />
-                <Route path="equipo" element={<EquipoForm />} />
-                <Route path="reporte" element={<Reporte />} />
-                <Route path="reporteclientes" element={<Reporteclientes />} />
-                <Route path="reporteequipos" element={<Reporteequipos />} />
-                <Route path="reporteticket" element={<Reporteticket />} />
-                <Route path="reportefactura" element={<Reportefactura />} />
-                <Route path="reporteservicio" element={<Reporteservicio />} />
-            </Route>
+                <Route path="/app" element={<Principal />}>
+                    <Route index element={<Tablero />} />
+                    <Route path="personal" element={<Personal />} />
+                    <Route path="clientes" element={<Clientes />} />
+                    <Route path="equipo" element={<EquipoForm />} />
+                    <Route path="reporte" element={<Reporte />} />
+                    <Route path="reporteclientes" element={<Reporteclientes />} />
+                    <Route path="reporteequipos" element={<Reporteequipos />} />
+                    <Route path="reporteticket" element={<Reporteticket />} />
+                    <Route path="reportefactura" element={<Reportefactura />} />
+                    <Route path="reporteservicio" element={<Reporteservicio />} />
+                </Route>
             </Routes>
         </BrowserRouter>
     );

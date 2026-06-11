@@ -60,7 +60,7 @@ export default function ClienteForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6 space-y-4"
+      className="max-w-lg mx-auto bg-[#121316] shadow-md rounded-lg p-6 space-y-4"
     >
       <h2 className="text-xl font-bold text-gray-700">Crear Cliente</h2>
 

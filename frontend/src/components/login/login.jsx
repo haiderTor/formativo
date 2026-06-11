@@ -29,6 +29,7 @@ export default function LoginPage() {
         throw new Error("Credenciales inválidas");
       }
       navigate("/app");
+      
     } catch (err) {
       setError(err.message);
     }

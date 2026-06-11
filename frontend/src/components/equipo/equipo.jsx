@@ -58,12 +58,12 @@ export default function EquipoForm() {
     return (
         <form
             onSubmit={handleSubmit}
-            className="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6 space-y-4"
+            className="max-w-lg mx-auto bg-[#191a1d] shadow-md rounded-lg p-6 space-y-4"
         >
-            <h2 className="text-xl font-bold text-gray-700">Crear equipo</h2>
+            <h2 className="text-xl font-bold text-white">Crear equipo</h2>
 
             <div>
-                <label className="block text-gray-600">Tipo de equipo</label>
+                <label className="block text-white-600">Tipo de equipo</label>
                 <input
                     type="text"
                     name="tipo_equipo"
@@ -74,7 +74,7 @@ export default function EquipoForm() {
             </div>
 
             <div>
-                <label className="block text-gray-600">Modelo</label>
+                <label className="block text-white-600">Modelo</label>
                 <input
                     type="text"
                     name="modelo"
@@ -85,7 +85,7 @@ export default function EquipoForm() {
             </div>
 
             <div>
-                <label className="block text-gray-600">Referencia</label>
+                <label className="block text-white-600">Referencia</label>
                 <input
                     type="text"
                     name="referencia"
@@ -96,7 +96,7 @@ export default function EquipoForm() {
             </div>
 
             <div>
-                <label className="block text-gray-600">Numero de serie</label>
+                <label className="block text-white-600">Numero de serie</label>
                 <input
                     type="text"
                     name="numero_serie"
@@ -107,7 +107,7 @@ export default function EquipoForm() {
             </div>
 
             <div>
-                <label className="block text-gray-600">Estado</label>
+                <label className="block text-white-600">Estado</label>
                 <input
                     type="text"
                     name="estado"
@@ -118,7 +118,7 @@ export default function EquipoForm() {
             </div>
 
             <div>
-                <label className="block text-gray-600">Marca</label>
+                <label className="block text-white-600">Marca</label>
                 <input
                     type="text"
                     name="marca_id"
@@ -129,7 +129,7 @@ export default function EquipoForm() {
             </div>
 
             <div>
-                <label className="block text-gray-600">Propietario</label>
+                <label className="block text-white-600">Propietario</label>
                 <input
                     type="text"
                     name="cliente_id"
@@ -146,7 +146,7 @@ export default function EquipoForm() {
                 type="submit"
                 className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
             >
-                Guardar Cliente
+                Guardar Equipo
             </button>
         </form>
     );

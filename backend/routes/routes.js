@@ -169,11 +169,11 @@ app.get('/routes/reporteclientes', async (req, res) => {
 app.get('/routes/reporteequipos', async (req, res) => {
     try {
         const result = await pool.query(`
-        SELECT e.equipo_id, e.tipo_equipo, e.modelo, e.referencia, e.numero_serie,
-            e.estado, m.nombre AS nombre_marca, c.nombres, c.apellidos
-        FROM equipo e
-        JOIN marca m ON e.marca_id = m.marca_id
-        JOIN clientes c ON e.cliente_id = c.cliente_id
+      SELECT e.equipo_id, e.tipo_equipo, e.modelo, e.referencia, e.numero_serie,
+             e.estado, m.nombre AS nombre_marca, c.nombres, c.apellidos
+      FROM equipo e
+      JOIN marca m ON e.marca_id = m.marca_id
+      JOIN clientes c ON e.cliente_id = c.cliente_id
     `);
         res.json(result.rows);
     } catch (error) {
@@ -182,7 +182,25 @@ app.get('/routes/reporteequipos', async (req, res) => {
     }
 });
 
-app.get('/routes/ticket', async (req, res) => {
+// Endpoint para llenar el dropdown de técnicos/empleados en el frontend
+app.get('/routes/listaempleados', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT empleado_id, nombres, apellidos, cargo FROM empleado ORDER BY nombres ASC');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al obtener lista de empleados:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// Endpoint para obtener los tickets filtrados por el ID del empleado técnico
+app.get('/routes/reporteticketfiltrado', async (req, res) => {
+    const { empleado_id } = req.query;
+
+    if (!empleado_id) {
+        return res.status(400).json({ success: false, error: 'Falta el parámetro empleado_id' });
+    }
+
     try {
         const result = await pool.query(`
         SELECT t.ticket_id, t.fecha_creacion, t.descripcion_falla, t.diagnostico,
@@ -195,12 +213,19 @@ app.get('/routes/ticket', async (req, res) => {
     `);
         res.json(result.rows);
     } catch (error) {
-        console.error('Error fetching tickets:', error);
+        console.error('Error al obtener lista de clientes:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 });
 
-app.get('/routes/reportefactura', async (req, res) => {
+// Endpoint para obtener las facturas filtradas por el ID del cliente
+app.get('/routes/reportefacturafiltrado', async (req, res) => {
+    const { cliente_id } = req.query;
+
+    if (!cliente_id) {
+        return res.status(400).json({ success: false, error: 'Falta el parámetro cliente_id' });
+    }
+
     try {
         const result = await pool.query(`
         SELECT f.factura_id, f.fecha, f.metodo_pago, f.estado,
@@ -212,13 +237,42 @@ app.get('/routes/reportefactura', async (req, res) => {
     `);
         res.json(result.rows);
     } catch (error) {
-        console.error('Error fetching facturas:', error);
+        console.error('Error al obtener facturas filtradas:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 });
 
 // Reporte de Servicios y Repuestos
-app.get('/routes/reporteservicio', async (req, res) => {
+// 1. Endpoint para obtener la lista de servicios (para el dropdown del frontend)
+app.get('/routes/servicios-lista', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT servicio_id, nombre FROM servicio ORDER BY nombre ASC');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al obtener lista de servicios:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+/// Endpoint para llenar el dropdown en el frontend
+app.get('/routes/listaservicios', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT servicio_id, nombre FROM servicio ORDER BY nombre ASC');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al obtener lista de servicios:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// Endpoint para obtener el reporte filtrado por el ID del servicio elegido
+app.get('/routes/reporteserviciofiltrado', async (req, res) => {
+    const { servicio_id } = req.query;
+
+    if (!servicio_id) {
+        return res.status(400).json({ success: false, error: 'Falta el parámetro servicio_id' });
+    }
+
     try {
         const result = await pool.query(`
         SELECT fs.factura_servicio_id, f.factura_id, s.nombre AS servicio,
@@ -234,7 +288,6 @@ app.get('/routes/reporteservicio', async (req, res) => {
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 });
-
 
 app.get('/routes/reporteclientes', async (req, res) => {
     try {

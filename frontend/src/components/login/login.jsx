@@ -28,7 +28,7 @@ export default function LoginPage() {
       if (!response.ok) {
         throw new Error("Credenciales inválidas");
       }
-      navigate("/app");
+      navigate("/tablero");
     } catch (err) {
       setError(err.message);
     }
@@ -68,7 +68,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-orange-100 via-orange-200 to-orange-300">
+    <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-blue-100 via-blue-200 to-blue-300">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
         <h2 className="text-3xl font-extrabold text-center text-gray-800 mb-6">
           Bienvenido 👋
@@ -114,7 +114,7 @@ export default function LoginPage() {
           {error && <p className="text-red-600 text-sm text-center">{error}</p>}
           <button
             type="submit"
-            className="w-full bg-[#FFBF00] text-white py-2 px-4 rounded-lg font-semibold hover:bg-[#e0a700] focus:ring-2 focus:ring-blue-400 transition"
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 transition"
           >
             Entrar
           </button>

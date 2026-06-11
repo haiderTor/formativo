@@ -101,7 +101,7 @@ export default function Navegacion() {
                     <ul className="space-y-2 font-medium">
                         {/* Tablero */}
                         <li>
-                            <NavLink to="/tablero" className={getNavLinkClass}>
+                            <NavLink to="tablero" className={getNavLinkClass}>
                                 <svg className="w-5 h-5 transition duration-75 group-hover:text-fg-brand shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6.025A7.5 7.5 0 1 0 17.975 14H10V6.025Z" />
                                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.5 3c-.169 0-.334.014-.5.025V11h7.975c.011-.166.025-.331.025-.5A7.5 7.5 0 0 0 13.5 3Z" />
@@ -112,7 +112,7 @@ export default function Navegacion() {
 
                         {/* Personal */}
                         <li>
-                            <NavLink to="/personal" className={getNavLinkClass}>
+                            <NavLink to="personal" className={getNavLinkClass}>
                                 <svg className="shrink-0 w-5 h-5 transition duration-75 group-hover:text-fg-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M16 19h4a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-2m-2.236-4a3 3 0 1 0 0-4M3 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                 </svg>
@@ -122,7 +122,7 @@ export default function Navegacion() {
 
                         {/* Clientes */}
                         <li>
-                            <NavLink to="/clientes" className={getNavLinkClass}>
+                            <NavLink to="clientes" className={getNavLinkClass}>
                                 <svg className="shrink-0 w-5 h-5 transition duration-75 group-hover:text-fg-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12H4m12 0-4 4m4-4-4-4m3-4h2a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-2" />
                                 </svg>
@@ -132,7 +132,7 @@ export default function Navegacion() {
 
                         {/* Equipo */}
                         <li>
-                            <NavLink to="/equipo" className={getNavLinkClass}>
+                            <NavLink to="equipo" className={getNavLinkClass}>
                                 <svg className="shrink-0 w-5 h-5 transition duration-75 group-hover:text-fg-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 5v14M9 5v14M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" />
                                 </svg>
@@ -158,11 +158,11 @@ export default function Navegacion() {
 
                             {/* Submenú */}
                             <ul className={`py-2 space-y-2 overflow-hidden transition-all duration-300 ${isReportesOpen ? 'block' : 'hidden'}`}>
-                                <li><NavLink to="/reporteclientes" className={getDropdownLinkClass}>Clientes</NavLink></li>
-                                <li><NavLink to="/reporteequipos" className={getDropdownLinkClass}>Equipos</NavLink></li>
-                                <li><NavLink to="/reporteticket" className={getDropdownLinkClass}>Tickets</NavLink></li>
-                                <li><NavLink to="/reportefactura" className={getDropdownLinkClass}>Facturas</NavLink></li>
-                                <li><NavLink to="/reporteservicio" className={getDropdownLinkClass}>Servicios</NavLink></li>
+                                <li><NavLink to="reporteclientes" className={getDropdownLinkClass}>Clientes</NavLink></li>
+                                <li><NavLink to="reporteequipos" className={getDropdownLinkClass}>Equipos</NavLink></li>
+                                <li><NavLink to="reporteticket" className={getDropdownLinkClass}>Tickets</NavLink></li>
+                                <li><NavLink to="reportefactura" className={getDropdownLinkClass}>Facturas</NavLink></li>
+                                <li><NavLink to="reporteservicio" className={getDropdownLinkClass}>Servicios</NavLink></li>
                             </ul>
                         </li>
                     </ul>

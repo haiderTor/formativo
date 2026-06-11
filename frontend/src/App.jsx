@@ -23,11 +23,11 @@ function App() {
         <BrowserRouter>
             <Routes>
     {/* Ruta independiente para login */}
-                <Route path="/login" element={<LoginPage />} />
+                <Route path="/" element={<LoginPage />} />
 
     {/* Layout con Nav + Outlet */}
-            <Route path="/" element={<Principal />}>
-                <Route path="tablero" element={<Tablero />} />
+            <Route path="/app" element={<Principal />}>
+                <Route index element={<Tablero />} />
                 <Route path="personal" element={<Personal />} />
                 <Route path="clientes" element={<Clientes />} />
                 <Route path="equipo" element={<EquipoForm />} />

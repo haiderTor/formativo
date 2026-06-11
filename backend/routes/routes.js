@@ -39,7 +39,7 @@ app.post('/login', async (req, res) => {
 
         const usuario = query.rows[0];
 
-        // Validar contraseña (en tu caso sin bcrypt)
+        // Validar contraseña 
         if (usuario.contrasena !== contrasena) {
             return res.status(401).json({
                 success: false,

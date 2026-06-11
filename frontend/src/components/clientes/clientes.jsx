@@ -60,17 +60,17 @@ export default function ClienteForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-lg mx-auto bg-[#121316] shadow-md rounded-lg p-6 space-y-4"
+      className="max-w-lg mx-auto bg-[#191a1d] shadow-md rounded-lg p-6 space-y-4"
     >
-      <h2 className="text-xl font-bold text-gray-700">Crear Cliente</h2>
+      <h2 className="text-xl font-bold text-white">Crear Cliente</h2>
 
       <div>
-        <label className="block text-gray-600">Tipo de Documento</label>
+        <label className="block text-white">Tipo de Documento</label>
         <select
           name="tipo_documento"
           value={formData.tipo_documento}
           onChange={handleChange}
-          className="w-full border rounded px-3 py-2"
+          className="w-full border bg-[#121316] rounded px-3 py-2"
         >
           <option value="">Seleccione...</option>
           <option value="CC">Cédula de Ciudadanía</option>
@@ -80,7 +80,7 @@ export default function ClienteForm() {
       </div>
 
       <div>
-        <label className="block text-gray-600">Documento</label>
+        <label className="block text-white">Documento</label>
         <input
           type="text"
           name="documento"
@@ -91,7 +91,7 @@ export default function ClienteForm() {
       </div>
 
       <div>
-        <label className="block text-gray-600">Nombres</label>
+        <label className="block text-white">Nombres</label>
         <input
           type="text"
           name="nombres"
@@ -102,7 +102,7 @@ export default function ClienteForm() {
       </div>
 
       <div>
-        <label className="block text-gray-600">Apellidos</label>
+        <label className="block text-white">Apellidos</label>
         <input
           type="text"
           name="apellidos"
@@ -113,7 +113,7 @@ export default function ClienteForm() {
       </div>
 
       <div>
-        <label className="block text-gray-600">Teléfono</label>
+        <label className="block text-white">Teléfono</label>
         <input
           type="tel"
           name="telefono"
@@ -124,7 +124,7 @@ export default function ClienteForm() {
       </div>
 
       <div>
-        <label className="block text-gray-600">Correo</label>
+        <label className="block text-white">Correo</label>
         <input
           type="email"
           name="correo"
@@ -135,7 +135,7 @@ export default function ClienteForm() {
       </div>
 
       <div>
-        <label className="block text-gray-600">Dirección</label>
+        <label className="block text-white">Dirección</label>
         <input
           type="text"
           name="direccion"
@@ -146,7 +146,7 @@ export default function ClienteForm() {
       </div>
 
       <div>
-        <label className="block text-gray-600">Ciudad</label>
+        <label className="block text-white">Ciudad</label>
         <input
           type="text"
           name="ciudad"

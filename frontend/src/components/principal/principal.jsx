@@ -93,7 +93,6 @@ export default function Navegacion() {
             </nav>
 
             {/* --- BARRA LATERAL (SIDEBAR) --- */}
-            {/* Se añade pt-14 para que comience justo debajo de la barra superior */}
             <aside
                 className={`fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform sm:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
                 aria-label="Sidebar"

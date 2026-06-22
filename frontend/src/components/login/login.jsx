@@ -29,7 +29,6 @@ export default function LoginPage() {
         throw new Error("Credenciales inválidas");
       }
       navigate("/app");
-      
     } catch (err) {
       setError(err.message);
     }
@@ -69,19 +68,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-blue-100 via-blue-200 to-blue-300">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-        <h2 className="text-3xl font-extrabold text-center text-gray-800 mb-6">
+    <div className="w-full h-screen flex items-center justify-center bg-gradient-to-b from-black via-gray-900 to-orange-600">
+      {/* Panel principal con efecto blur */}
+      <div className="w-full max-w-md bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
+        <h2 className="text-3xl font-extrabold text-center text-white mb-6">
           Bienvenido 👋
         </h2>
-        <p className="text-center text-gray-500 mb-6">
+        <p className="text-center text-gray-200 mb-6">
           Ingresa tus credenciales para continuar
         </p>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label
               htmlFor="correo"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-200 mb-1"
             >
               Correo electrónico
             </label>
@@ -90,7 +90,7 @@ export default function LoginPage() {
               id="correo"
               value={correo}
               onChange={(e) => setCorreo(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+              className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition"
               placeholder="ejemplo@gmail.com"
               required
             />
@@ -98,7 +98,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="contrasena"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-200 mb-1"
             >
               Contraseña
             </label>
@@ -107,34 +107,36 @@ export default function LoginPage() {
               id="contrasena"
               value={contrasena}
               onChange={(e) => setContrasena(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+              className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition"
               placeholder="********"
               required
             />
           </div>
-          {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+          {error && <p className="text-red-400 text-sm text-center">{error}</p>}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 transition"
+            className="w-full bg-orange-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-orange-700 focus:ring-2 focus:ring-orange-400 transition"
           >
             Entrar
           </button>
         </form>
-        <p className="mt-6 text-center text-sm text-gray-600">
+        <p className="mt-6 text-center text-sm text-gray-300">
           ¿No tienes cuenta?{" "}
           <button
             type="button"
             onClick={() => setShowModal(true)}
-            className="text-blue-600 font-medium hover:underline"
+            className="text-orange-400 font-medium hover:underline"
           >
             Regístrate
           </button>
         </p>
       </div>
+
+      {/* Modal de registro con blur */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-6">
-            <h3 className="text-2xl font-bold mb-4 text-center text-gray-800">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60">
+          <div className="bg-white/10 backdrop-blur-xl rounded-xl shadow-2xl w-full max-w-lg p-6">
+            <h3 className="text-2xl font-bold mb-4 text-center text-white">
               Crear cuenta
             </h3>
             <form onSubmit={handleRegister} className="space-y-4">
@@ -143,7 +145,7 @@ export default function LoginPage() {
                 placeholder="Nombre"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-orange-400"
                 required
               />
               <input
@@ -151,7 +153,7 @@ export default function LoginPage() {
                 placeholder="Usuario"
                 value={usuario}
                 onChange={(e) => setUsuario(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-orange-400"
                 required
               />
               <input
@@ -159,7 +161,7 @@ export default function LoginPage() {
                 placeholder="Correo electrónico"
                 value={correoRegistro}
                 onChange={(e) => setCorreoRegistro(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-orange-400"
                 required
               />
               <input
@@ -167,7 +169,7 @@ export default function LoginPage() {
                 placeholder="Contraseña"
                 value={contrasenaRegistro}
                 onChange={(e) => setContrasenaRegistro(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-orange-400"
                 required
               />
               <input
@@ -175,20 +177,20 @@ export default function LoginPage() {
                 placeholder="Verificación de contraseña"
                 value={verificacion}
                 onChange={(e) => setVerificacion(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-orange-400"
                 required
               />
               <div className="flex justify-between mt-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
+                  className="px-4 py-2 bg-gray-400/40 text-white rounded-lg hover:bg-gray-500/50"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
                 >
                   Registrarse
                 </button>
@@ -200,4 +202,3 @@ export default function LoginPage() {
     </div>
   );
 }
-/* hola mundo */

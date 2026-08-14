@@ -5,6 +5,10 @@ export default function Navegacion() {
     // Estados para controlar los componentes interactivos
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isReportesOpen, setIsReportesOpen] = useState(false);
+    const [isIngresosOpen, setIsIngresosOpen] = useState(false);
+    const [isGastosOpen, setIsGastosOpen] = useState(false);
+    const [isPersonasOpen, setIsPersonasOpen] = useState(false);
+    const [isNominaOpen, setIsNominaOpen] = useState(false);
     const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
 
     // Funciones auxiliares para manejar las clases activas en los NavLinks
@@ -109,6 +113,112 @@ export default function Navegacion() {
                                 <span className="ms-3">Tablero</span>
                             </NavLink>
                         </li>
+
+
+                        
+
+
+                        <li>
+                            <button
+                                type="button"
+                                onClick={() => setIsIngresosOpen(!isIngresosOpen)}
+                                className={`flex items-center w-full justify-between px-2 py-1.5 rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group transition-colors ${isIngresosOpen ? 'text-fg-brand bg-neutral-tertiary' : 'text-body'}`}
+                            >
+                                <svg className="shrink-0 w-5 h-5 transition duration-75 group-hover:text-fg-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312" />
+                                </svg>
+                                <span className="flex-1 ms-3 text-left whitespace-nowrap">Ingresos</span>
+                                <svg className={`w-5 h-5 transition-transform ${isIngresosOpen ? 'rotate-180' : ''}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 9-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            {/* Submenú */}
+                            <ul className={`py-2 space-y-2 overflow-hidden transition-all duration-300 ${isIngresosOpen ? 'block' : 'hidden'}`}>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Facturas</NavLink></li>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Notas Creditos</NavLink></li>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Notas Debitos</NavLink></li>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Pagos Recibidos</NavLink></li>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Cotizaciones</NavLink></li>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Remisiones</NavLink></li>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Remisiones</NavLink></li>
+                            </ul>
+                        </li>
+                        
+                        
+                        {/* menu desplegable Gastos */}
+                        <li>
+                            <button
+                                type="button"
+                                onClick={() => setIsGastosOpen(!isGastosOpen)}
+                                className={`flex items-center w-full justify-between px-2 py-1.5 rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group transition-colors ${isGastosOpen ? 'text-fg-brand bg-neutral-tertiary' : 'text-body'}`}
+                            >
+                                <svg className="shrink-0 w-5 h-5 transition duration-75 group-hover:text-fg-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312" />
+                                </svg>
+                                <span className="flex-1 ms-3 text-left whitespace-nowrap">Gastos</span>
+                                <svg className={`w-5 h-5 transition-transform ${isGastosOpen ? 'rotate-180' : ''}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 9-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            {/* Submenú */}
+                            <ul className={`py-2 space-y-2 overflow-hidden transition-all duration-300 ${isGastosOpen ? 'block' : 'hidden'}`}>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Nomina Individual</NavLink></li>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Nomina Masiva</NavLink></li>
+                            </ul>
+                        </li>
+
+
+                     {/* menu desplegable Personas */}
+                        <li>
+                            <button
+                                type="button"
+                                onClick={() => setIsPersonasOpen(!isPersonasOpen)}
+                                className={`flex items-center w-full justify-between px-2 py-1.5 rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group transition-colors ${isPersonasOpen ? 'text-fg-brand bg-neutral-tertiary' : 'text-body'}`}
+                            >
+                                <svg className="shrink-0 w-5 h-5 transition duration-75 group-hover:text-fg-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312" />
+                                </svg>
+                                <span className="flex-1 ms-3 text-left whitespace-nowrap">Personas</span>
+                                <svg className={`w-5 h-5 transition-transform ${isPersonasOpen ? 'rotate-180' : ''}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 9-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            {/* Submenú */}
+                            <ul className={`py-2 space-y-2 overflow-hidden transition-all duration-300 ${isPersonasOpen ? 'block' : 'hidden'}`}>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Clientes</NavLink></li>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Empleados</NavLink></li>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Proveedores</NavLink></li>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Mandantes</NavLink></li>
+                            </ul>
+                        </li>
+
+
+                       {/* menu desplegable Nomina*/}
+                        <li>
+                            <button
+                                type="button"
+                                onClick={() => setIsNominaOpen(!isNominaOpen)}
+                                className={`flex items-center w-full justify-between px-2 py-1.5 rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group transition-colors ${isNominaOpen ? 'text-fg-brand bg-neutral-tertiary' : 'text-body'}`}
+                            >
+                                <svg className="shrink-0 w-5 h-5 transition duration-75 group-hover:text-fg-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312" />
+                                </svg>
+                                <span className="flex-1 ms-3 text-left whitespace-nowrap">Nomina</span>
+                                <svg className={`w-5 h-5 transition-transform ${isNominaOpen ? 'rotate-180' : ''}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 9-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            {/* Submenú */}
+                            <ul className={`py-2 space-y-2 overflow-hidden transition-all duration-300 ${isNominaOpen ? 'block' : 'hidden'}`}>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Nomina individual</NavLink></li>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Nomina masiva</NavLink></li>
+                            </ul>
+                        </li>
+
 
                         {/* Personal */}
                         <li>

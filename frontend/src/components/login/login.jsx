@@ -68,130 +68,91 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-gradient-to-b from-black via-gray-900 to-orange-600">
-      {/* Panel principal con efecto blur */}
-      <div className="w-full max-w-md bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
-        <h2 className="text-3xl font-extrabold text-center text-white mb-6">
-          Bienvenido 👋
-        </h2>
-        <p className="text-center text-gray-200 mb-6">
-          Ingresa tus credenciales para continuar
-        </p>
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label
-              htmlFor="correo"
-              className="block text-sm font-medium text-gray-200 mb-1"
+    <div className="w-full h-screen bg-gradient-to-b from-black via-gray-900 to-orange-600 flex items-center justify-center p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-6xl items-center">
+        <div className="text-center md:text-left flex flex-col justify-center px-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-orange-400 mb-4">
+            Todo lo que necesitas en un solo lugar.
+          </h1>
+          <p className="text-gray-300 text-lg">
+            Accede fácilmente a tus servicios y gestiona tu cuenta desde cualquier dispositivo.
+          </p>
+        </div>
+
+        <div className="w-full max-w-md bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8 mx-auto">
+          <h2 className="text-3xl font-extrabold text-center text-white mb-6">
+            Bienvenido 👋
+          </h2>
+          <p className="text-center text-gray-200 mb-6">
+            Ingresa tus credenciales para continuar
+          </p>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label htmlFor="correo" className="block text-sm font-medium text-gray-200 mb-1">
+                Correo electrónico
+              </label>
+              <input
+                type="email"
+                id="correo"
+                value={correo}
+                onChange={(e) => setCorreo(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition"
+                placeholder="ejemplo@gmail.com"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="contrasena" className="block text-sm font-medium text-gray-200 mb-1">
+                Contraseña
+              </label>
+              <input
+                type="password"
+                id="contrasena"
+                value={contrasena}
+                onChange={(e) => setContrasena(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition"
+                placeholder="********"
+                required
+              />
+            </div>
+            {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+            <button
+              type="submit"
+              className="w-full bg-orange-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-orange-700 focus:ring-2 focus:ring-orange-400 transition"
             >
-              Correo electrónico
-            </label>
-            <input
-              type="email"
-              id="correo"
-              value={correo}
-              onChange={(e) => setCorreo(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition"
-              placeholder="ejemplo@gmail.com"
-              required
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="contrasena"
-              className="block text-sm font-medium text-gray-200 mb-1"
+              Entrar
+            </button>
+          </form>
+          <p className="mt-6 text-center text-sm text-gray-300">
+            ¿No tienes cuenta?{" "}
+            <button
+              type="button"
+              onClick={() => setShowModal(true)}
+              className="text-orange-400 font-medium hover:underline"
             >
-              Contraseña
-            </label>
-            <input
-              type="password"
-              id="contrasena"
-              value={contrasena}
-              onChange={(e) => setContrasena(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition"
-              placeholder="********"
-              required
-            />
-          </div>
-          {error && <p className="text-red-400 text-sm text-center">{error}</p>}
-          <button
-            type="submit"
-            className="w-full bg-orange-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-orange-700 focus:ring-2 focus:ring-orange-400 transition"
-          >
-            Entrar
-          </button>
-        </form>
-        <p className="mt-6 text-center text-sm text-gray-300">
-          ¿No tienes cuenta?{" "}
-          <button
-            type="button"
-            onClick={() => setShowModal(true)}
-            className="text-orange-400 font-medium hover:underline"
-          >
-            Regístrate
-          </button>
-        </p>
+              Regístrate
+            </button>
+          </p>
+        </div>
       </div>
 
-      {/* Modal de registro con blur */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/60">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 p-4">
           <div className="bg-white/10 backdrop-blur-xl rounded-xl shadow-2xl w-full max-w-lg p-6">
             <h3 className="text-2xl font-bold mb-4 text-center text-white">
               Crear cuenta
             </h3>
             <form onSubmit={handleRegister} className="space-y-4">
-              <input
-                type="text"
-                placeholder="Nombre"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-orange-400"
-                required
-              />
-              <input
-                type="text"
-                placeholder="Usuario"
-                value={usuario}
-                onChange={(e) => setUsuario(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-orange-400"
-                required
-              />
-              <input
-                type="email"
-                placeholder="Correo electrónico"
-                value={correoRegistro}
-                onChange={(e) => setCorreoRegistro(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-orange-400"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Contraseña"
-                value={contrasenaRegistro}
-                onChange={(e) => setContrasenaRegistro(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-orange-400"
-                required
-              />
-              <input
-                type="password"
-                placeholder="Verificación de contraseña"
-                value={verificacion}
-                onChange={(e) => setVerificacion(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-orange-400"
-                required
-              />
-              <div className="flex justify-between mt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 bg-gray-400/40 text-white rounded-lg hover:bg-gray-500/50"
-                >
+              <input type="text" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-orange-400" required />
+              <input type="text" placeholder="Usuario" value={usuario} onChange={(e) => setUsuario(e.target.value)} className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-orange-400" required />
+              <input type="email" placeholder="Correo electrónico" value={correoRegistro} onChange={(e) => setCorreoRegistro(e.target.value)} className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-orange-400" required />
+              <input type="password" placeholder="Contraseña" value={contrasenaRegistro} onChange={(e) => setContrasenaRegistro(e.target.value)} className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-orange-400" required />
+              <input type="password" placeholder="Verificación de contraseña" value={verificacion} onChange={(e) => setVerificacion(e.target.value)} className="w-full px-4 py-2 border border-gray-400/30 rounded-lg bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-orange-400" required />
+              <div className="flex flex-col sm:flex-row justify-between gap-4 mt-4">
+                <button type="button" onClick={() => setShowModal(false)} className="w-full sm:w-auto px-4 py-2 bg-gray-400/40 text-white rounded-lg hover:bg-gray-500/50">
                   Cancelar
                 </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
-                >
+                <button type="submit" className="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
                   Registrarse
                 </button>
               </div>

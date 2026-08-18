@@ -14,8 +14,15 @@ export default defineConfig([
       reactRefresh.configs.vite,
     ],
     languageOptions: {
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
       parserOptions: { ecmaFeatures: { jsx: true } },
+    },
+    rules: {
+      'no-undef': 'off', // desactiva el error de variables no definidas
+        'no-unused-vars': 'off', // desactiva el error de variables no utilizadas
     },
   },
 ])

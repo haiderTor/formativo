@@ -473,5 +473,51 @@ app.listen(PORT, () => {
     console.log(`Servidor ejecutándose en el puerto ${PORT}`);
 });
 
+// end points para la seccion de tickets
 
-//hola mundo
+// Endpoint para obtener todos los tickets y renderizar en el frontend con memo
+app.get('/routes/tickets', async (req, res) => {
+    try {
+        const result = await pool.query(`
+        SELECT 
+            t.ticket_id,
+            t.fecha_creacion,
+            t.descripcion_falla,
+            t.diagnostico,
+            t.estado_ticket,
+            t.observaciones,
+            t.equipo_id,
+            t.empleado_id,
+            e.tipo_equipo AS nombre_equipo,
+            c.nombres AS cliente_nombre,
+            c.apellidos AS cliente_apellido,
+            emp.nombres AS empleado_nombre,
+            emp.apellidos AS empleado_apellido
+        FROM ticket t
+        JOIN equipo e ON t.equipo_id = e.equipo_id
+        JOIN clientes c ON e.cliente_id = c.cliente_id
+        JOIN empleado emp ON t.empleado_id = emp.empleado_id
+        ORDER BY t.fecha_creacion DESC
+        `);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching tickets:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+
+// Endpoint para crear un nuevo ticket y renderizarlo en el frontend con memo
+app.post('/routes/tickets', async (req, res) => {
+    const { fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id } = req.body;
+    try {
+        const result = await pool.query(
+            'INSERT INTO ticket (fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            [fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error creating ticket:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});

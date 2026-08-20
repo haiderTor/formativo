@@ -9,6 +9,7 @@ export default function Navegacion() {
     const [isGastosOpen, setIsGastosOpen] = useState(false);
     const [isPersonasOpen, setIsPersonasOpen] = useState(false);
     const [isNominaOpen, setIsNominaOpen] = useState(false);
+    const [isInventoryOpen, setInventoryOpen] = useState(false);
     const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
 
     // Funciones auxiliares para manejar las clases activas en los NavLinks
@@ -188,10 +189,10 @@ export default function Navegacion() {
 
                             {/* Submenú */}
                             <ul className={`py-2 space-y-2 overflow-hidden transition-all duration-300 ${isPersonasOpen ? 'block' : 'hidden'}`}>
-                                <li><NavLink to="" className={getDropdownLinkClass}>Clientes</NavLink></li>
-                                <li><NavLink to="" className={getDropdownLinkClass}>Empleados</NavLink></li>
-                                <li><NavLink to="" className={getDropdownLinkClass}>Proveedores</NavLink></li>
-                                <li><NavLink to="" className={getDropdownLinkClass}>Mandantes</NavLink></li>
+                                <li><NavLink to="Homepersonas" className={getDropdownLinkClass}>Clientes</NavLink></li>
+                                <li><NavLink to="empleados" className={getDropdownLinkClass}>Empleados</NavLink></li>
+                                <li><NavLink to="proveedores" className={getDropdownLinkClass}>Proveedores</NavLink></li>
+                                <li><NavLink to="mandantes" className={getDropdownLinkClass}>Mandantes</NavLink></li>
                             </ul>
                         </li>
 
@@ -219,6 +220,31 @@ export default function Navegacion() {
                             </ul>
                         </li>
 
+                       {/* menu desplegable Invetario*/}
+                        <li>
+                            <button
+                                type="button"
+                                onClick={() => setInventoryOpen(!isInventoryOpen)}
+                                className={`flex items-center w-full justify-between px-2 py-1.5 rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group transition-colors ${isInventoryOpen ? 'text-fg-brand bg-neutral-tertiary' : 'text-body'}`}
+                            >
+                                <svg className="shrink-0 w-5 h-5 transition duration-75 group-hover:text-fg-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312" />
+                                </svg>
+                                <span className="flex-1 ms-3 text-left whitespace-nowrap">Inventario</span>
+                                <svg className={`w-5 h-5 transition-transform ${isInventoryOpen ? 'rotate-180' : ''}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 9-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            {/* Submenú */}
+                            <ul className={`py-2 space-y-2 overflow-hidden transition-all duration-300 ${isInventoryOpen ? 'block' : 'hidden'}`}>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Items de venta</NavLink></li>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Categorías</NavLink></li>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Stock</NavLink></li>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Gestion de items</NavLink></li>
+                                <li><NavLink to="" className={getDropdownLinkClass}>Ajustes de inventario</NavLink></li>
+                            </ul>
+                        </li>
 
                         {/* Personal */}
                         <li>
@@ -227,16 +253,6 @@ export default function Navegacion() {
                                     <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M16 19h4a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-2m-2.236-4a3 3 0 1 0 0-4M3 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                 </svg>
                                 <span className="ms-3">Personal</span>
-                            </NavLink>
-                        </li>
-
-                        {/* Clientes */}
-                        <li>
-                            <NavLink to="clientes" className={getNavLinkClass}>
-                                <svg className="shrink-0 w-5 h-5 transition duration-75 group-hover:text-fg-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12H4m12 0-4 4m4-4-4-4m3-4h2a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-2" />
-                                </svg>
-                                <span className="ms-3">Clientes</span>
                             </NavLink>
                         </li>
 

@@ -475,7 +475,7 @@ app.listen(PORT, () => {
 
 // end points para la seccion de tickets
 
-// Endpoint para obtener todos los tickets y renderizar en el frontend con memo
+// Endpoint para obtener todos los tickets
 app.get('/routes/tickets', async (req, res) => {
     try {
         const result = await pool.query(`
@@ -506,18 +506,55 @@ app.get('/routes/tickets', async (req, res) => {
     }
 });
 
-
-// Endpoint para crear un nuevo ticket y renderizarlo en el frontend con memo
+// Endpoint para crear un nuevo ticket
 app.post('/routes/tickets', async (req, res) => {
     const { fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id } = req.body;
     try {
         const result = await pool.query(
-            'INSERT INTO ticket (fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            `INSERT INTO ticket 
+            (fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
             [fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id]
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
         console.error('Error creating ticket:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// Endpoint para actualizar un ticket existente
+app.put('/routes/tickets/:id', async (req, res) => {
+    const { id } = req.params;
+    const { fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id } = req.body;
+    try {
+        const result = await pool.query(
+            `UPDATE ticket SET 
+                fecha_creacion=$1, 
+                descripcion_falla=$2, 
+                diagnostico=$3, 
+                estado_ticket=$4, 
+                observaciones=$5, 
+                equipo_id=$6, 
+                empleado_id=$7
+             WHERE ticket_id=$8 RETURNING *`,
+            [fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id, id]
+        );
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error updating ticket:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// Endpoint para borrar un ticket
+app.delete('/routes/tickets/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM ticket WHERE ticket_id=$1', [id]);
+        res.json({ success: true, message: 'Ticket eliminado correctamente' });
+    } catch (error) {
+        console.error('Error deleting ticket:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 });

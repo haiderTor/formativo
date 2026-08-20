@@ -4,7 +4,6 @@ import Principal from "./components/principal/principal.jsx";
 import LoginPage from "./components/login/login.jsx";
 import Tablero from "./components/tablero/tablero.jsx";
 import Personal from "./components/personal/personal.jsx";
-import Clientes from "./components/personas/crearclientes/clientes.jsx";
 import Homepersonas from "./components/personas/homepersonas.jsx";
 import EquipoForm from "./components/equipo/equipo.jsx";
 import Reporte from "./components/reporte/ReporteDemo.jsx";
@@ -26,7 +25,6 @@ function App() {
                 <Route path="/app" element={<Principal />}>
                     <Route index element={<Inicio/>} />
                     <Route path="personal" element={<Personal />} />
-                    <Route path="clientes" element={<Clientes />} />
                     <Route path="equipo" element={<EquipoForm />} />
                     <Route path="reporte" element={<Reporte />} />
                     <Route path="reporteclientes" element={<Reporteclientes />} />

@@ -81,25 +81,76 @@ app.post('/routes/usuario', async (req, res) => {
     }
 });
 
+// ==========================================
+// ENDPOINTS DE CLIENTES (ACTUALIZADOS PARA CRUD)
+// ==========================================
+
+// OBTENER TODOS LOS CLIENTES
+app.get('/routes/clientes', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM clientes ORDER BY cliente_id DESC');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching clientes:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// CREAR CLIENTE
 app.post('/routes/clientes', async (req, res) => {
     const { tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad } = req.body;
 
     try {
-        const query = await pool.query('INSERT INTO clientes(tipo_documento,documento,nombres,apellidos,telefono,correo,direccion,ciudad) VALUES($1, $2, $3,$4, $5, $6, $7, $8) RETURNING *', [tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad]);
-        res.status(201).json({
-            success: true,
-            message: 'Data inserted successfully',
-            data: query.rows[0]
-        });
-        console.log('item registrado correctamente:', query.rows[0]);
+        const query = await pool.query(
+            'INSERT INTO clientes(tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', 
+            [tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad]
+        );
+        res.status(201).json(query.rows[0]); // Devuelve el objeto directo para React
+        console.log('Cliente registrado correctamente:', query.rows[0]);
     } catch (error) {
         console.error('Error inserting data:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Internal Server Error'
-        });
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 });
+
+// EDITAR CLIENTE
+app.put('/routes/clientes/:id', async (req, res) => {
+    const { id } = req.params;
+    const { tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad } = req.body;
+    try {
+        const result = await pool.query(
+            `UPDATE clientes SET 
+                tipo_documento=$1, 
+                documento=$2, 
+                nombres=$3, 
+                apellidos=$4, 
+                telefono=$5, 
+                correo=$6, 
+                direccion=$7, 
+                ciudad=$8
+             WHERE cliente_id=$9 RETURNING *`,
+            [tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad, id]
+        );
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error updating cliente:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// ELIMINAR CLIENTE
+app.delete('/routes/clientes/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM clientes WHERE cliente_id=$1', [id]);
+        res.json({ success: true, message: 'Cliente eliminado correctamente' });
+    } catch (error) {
+        console.error('Error deleting cliente:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// ==========================================
 
 app.post('/routes/empleado', async (req, res) => {
     const { nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;

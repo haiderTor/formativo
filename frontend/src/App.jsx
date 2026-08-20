@@ -14,7 +14,7 @@ import Reporteticket from "./components/reporte/reporteticket.jsx";
 import Reportefactura from "./components/reporte/reportefactura.jsx";
 import Reporteservicio from "./components/reporte/reporteservicio.jsx";
 import Tickets from "./components/tickets/tickets.jsx";
-
+import Inicio from "./components/inicio/inicio.jsx";
 function App() {
     return (
         <BrowserRouter>
@@ -24,7 +24,7 @@ function App() {
 
     {/* Layout con Nav + Outlet */}
                 <Route path="/app" element={<Principal />}>
-                    <Route index element={<Tablero />} />
+                    <Route index element={<Inicio/>} />
                     <Route path="personal" element={<Personal />} />
                     <Route path="clientes" element={<Clientes />} />
                     <Route path="equipo" element={<EquipoForm />} />

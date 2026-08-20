@@ -506,7 +506,6 @@ app.get('/routes/tickets', async (req, res) => {
     }
 });
 
-
 // Endpoint para crear un nuevo ticket y renderizarlo en el frontend con memo
 app.post('/routes/tickets', async (req, res) => {
     const { fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id } = req.body;
@@ -518,6 +517,64 @@ app.post('/routes/tickets', async (req, res) => {
         res.status(201).json(result.rows[0]);
     } catch (error) {
         console.error('Error creating ticket:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+
+
+// Endpoint para obtener todos los servicios
+app.get('/routes/servicios', async (req, res) => {
+    try {
+        const result = await pool.query(
+            'SELECT servicio_id, nombre, descripcion, precio_base, observaciones FROM servicio ORDER BY nombre ASC'
+        );
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching servicios:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// Endpoint para crear un nuevo servicio
+app.post('/routes/servicios', async (req, res) => {
+    const { nombre, descripcion, precio_base, observaciones } = req.body;
+    try {
+        const result = await pool.query(
+            'INSERT INTO servicio (nombre, descripcion, precio_base, observaciones) VALUES ($1, $2, $3, $4) RETURNING servicio_id, nombre, descripcion, precio_base, observaciones',
+            [nombre, descripcion, precio_base, observaciones]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error creating servicio:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// Endpoint para editar un servicio existente
+app.put('/routes/servicios/:id', async (req, res) => {
+    const { id } = req.params;
+    const { nombre, descripcion, precio_base, observaciones } = req.body;
+    try {
+        const result = await pool.query(
+            'UPDATE servicio SET nombre=$1, descripcion=$2, precio_base=$3, observaciones=$4 WHERE servicio_id=$5 RETURNING servicio_id, nombre, descripcion, precio_base, observaciones',
+            [nombre, descripcion, precio_base, observaciones, id]
+        );
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error updating servicio:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// Endpoint para eliminar un servicio
+app.delete('/routes/servicios/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM servicio WHERE servicio_id=$1', [id]);
+        res.json({ success: true, message: 'Servicio eliminado correctamente' });
+    } catch (error) {
+        console.error('Error deleting servicio:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 });

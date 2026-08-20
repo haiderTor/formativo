@@ -114,11 +114,6 @@ export default function Navegacion() {
                                 <span className="ms-3">Tablero</span>
                             </NavLink>
                         </li>
-
-
-                        
-
-
                         <li>
                             <button
                                 type="button"
@@ -197,7 +192,7 @@ export default function Navegacion() {
                         </li>
 
 
-                       {/* menu desplegable Nomina*/}
+                        {/* menu desplegable Nomina*/}
                         <li>
                             <button
                                 type="button"
@@ -290,6 +285,11 @@ export default function Navegacion() {
                                 <li><NavLink to="reportefactura" className={getDropdownLinkClass}>Facturas</NavLink></li>
                                 <li><NavLink to="reporteservicio" className={getDropdownLinkClass}>Servicios</NavLink></li>
                             </ul>
+                        </li>
+                        <li>
+                            <NavLink to="tickets" className={getNavLinkClass}>
+                                Tickets
+                            </NavLink>
                         </li>
                     </ul>
                 </div>

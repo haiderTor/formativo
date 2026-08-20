@@ -13,12 +13,7 @@ import Reporteequipos from "./components/reporte/reporteequipos.jsx";
 import Reporteticket from "./components/reporte/reporteticket.jsx";
 import Reportefactura from "./components/reporte/reportefactura.jsx";
 import Reporteservicio from "./components/reporte/reporteservicio.jsx";
-
-
-
-
-
-
+import Tickets from "./components/tickets/tickets.jsx";
 
 function App() {
     return (
@@ -40,6 +35,7 @@ function App() {
                     <Route path="reportefactura" element={<Reportefactura />} />
                     <Route path="reporteservicio" element={<Reporteservicio />} />
                     <Route path="homepersonas" element={<Homepersonas />} />
+                    <Route path="tickets" element={<Tickets />} />
                 </Route>
             </Routes>
         </BrowserRouter>
@@ -47,4 +43,3 @@ function App() {
 }
 
 export default App;
-// Hola mundo

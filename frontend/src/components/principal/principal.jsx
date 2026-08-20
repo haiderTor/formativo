@@ -215,7 +215,7 @@ export default function Navegacion() {
                             </ul>
                         </li>
 
-                       {/* menu desplegable Invetario*/}
+                        {/* menu desplegable Invetario*/}
                         <li>
                             <button
                                 type="button"

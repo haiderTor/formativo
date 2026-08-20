@@ -4,15 +4,16 @@ export default function Tickets() {
     const [tickets, setTickets] = useState([]);
     const [search, setSearch] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const [editingTicket, setEditingTicket] = useState(null);
     const [newTicket, setNewTicket] = useState({
-    fecha_creacion: "",
-    descripcion_falla: "",
-    diagnostico: "",
-    estado_ticket: "",
-    observaciones: "",
-    equipo_id: "",
-    empleado_id: "",
-});
+        fecha_creacion: "",
+        descripcion_falla: "",
+        diagnostico: "",
+        estado_ticket: "",
+        observaciones: "",
+        equipo_id: "",
+        empleado_id: "",
+    });
 
     useEffect(() => {
         fetch("http://localhost:3000/routes/tickets")
@@ -35,17 +36,57 @@ export default function Tickets() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        fetch("http://localhost:3000/routes/tickets", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newTicket),
+
+        if (editingTicket) {
+        // EDITAR
+        fetch(`http://localhost:3000/routes/tickets/${editingTicket.ticket_id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newTicket),
         })
-        .then((res) => res.json())
-        .then((saved) => {
+            .then((res) => res.json())
+            .then((updated) => {
+            setTickets(
+                tickets.map((t) =>
+                t.ticket_id === updated.ticket_id ? updated : t
+                )
+            );
+            setShowModal(false);
+            setEditingTicket(null);
+            })
+            .catch((err) => console.error(err));
+        } else {
+        // CREAR
+        fetch("http://localhost:3000/routes/tickets", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newTicket),
+        })
+            .then((res) => res.json())
+            .then((saved) => {
             setTickets([...tickets, saved]);
             setShowModal(false);
+            })
+            .catch((err) => console.error(err));
+        }
+    };
+
+    const handleEdit = (ticket) => {
+        setEditingTicket(ticket);
+        setNewTicket(ticket);
+        setShowModal(true);
+    };
+
+    const handleDelete = (id) => {
+        if (confirm("¿Seguro que deseas borrar este ticket?")) {
+        fetch(`http://localhost:3000/routes/tickets/${id}`, {
+            method: "DELETE",
         })
-        .catch((err) => console.error(err));
+            .then(() => {
+            setTickets(tickets.filter((t) => t.ticket_id !== id));
+            })
+            .catch((err) => console.error(err));
+        }
     };
 
     return (
@@ -54,7 +95,19 @@ export default function Tickets() {
             <h1 className="text-2xl font-bold">Tickets</h1>
             {tickets.length > 0 && (
             <button
-                onClick={() => setShowModal(true)}
+                onClick={() => {
+                setEditingTicket(null);
+                setNewTicket({
+                    fecha_creacion: "",
+                    descripcion_falla: "",
+                    diagnostico: "",
+                    estado_ticket: "",
+                    observaciones: "",
+                    equipo_id: "",
+                    empleado_id: "",
+                });
+                setShowModal(true);
+                }}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-transform hover:scale-105"
             >
                 Crear Ticket
@@ -96,15 +149,32 @@ export default function Tickets() {
                 <p><strong>Equipo:</strong> {ticket.nombre_equipo}</p>
                 <p><strong>Cliente:</strong> {ticket.cliente_nombre} {ticket.cliente_apellido}</p>
                 <p><strong>Empleado:</strong> {ticket.empleado_nombre} {ticket.empleado_apellido}</p>
+
+                <div className="flex space-x-2 mt-3">
+                    <button
+                    onClick={() => handleEdit(ticket)}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded transition-transform hover:scale-105"
+                    >
+                    Editar
+                    </button>
+                    <button
+                    onClick={() => handleDelete(ticket.ticket_id)}
+                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded transition-transform hover:scale-105"
+                    >
+                    Borrar
+                    </button>
+                </div>
                 </li>
             ))}
             </ul>
         )}
 
-        {showModal && (
+                {showModal && (
             <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center">
             <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-xl shadow-2xl w-96 text-gray-200">
-                <h2 className="text-xl font-bold mb-4 text-center text-blue-400">Nuevo Ticket</h2>
+                <h2 className="text-xl font-bold mb-4 text-center text-blue-400">
+                {editingTicket ? "Editar Ticket" : "Nuevo Ticket"}
+                </h2>
                 <form onSubmit={handleSubmit} className="space-y-3">
                 <input
                     type="date"
@@ -165,7 +235,10 @@ export default function Tickets() {
                 <div className="flex justify-end space-x-2 mt-4">
                     <button
                     type="button"
-                    onClick={() => setShowModal(false)}
+                    onClick={() => {
+                        setShowModal(false);
+                        setEditingTicket(null);
+                    }}
                     className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-transform hover:scale-105"
                     >
                     Cancelar
@@ -174,7 +247,7 @@ export default function Tickets() {
                     type="submit"
                     className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-transform hover:scale-105"
                     >
-                    Guardar
+                    {editingTicket ? "Actualizar" : "Guardar"}
                     </button>
                 </div>
                 </form>

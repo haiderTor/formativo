@@ -81,9 +81,7 @@ app.post('/routes/usuario', async (req, res) => {
     }
 });
 
-// ==========================================
-// ENDPOINTS DE CLIENTES (ACTUALIZADOS PARA CRUD)
-// ==========================================
+
 
 // OBTENER TODOS LOS CLIENTES
 app.get('/routes/clientes', async (req, res) => {
@@ -364,4 +362,67 @@ app.post('/routes/servicios', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor ejecutándose en el puerto ${PORT}`);
+});
+
+// OBTENER TODOS LOS EMPLEADOS
+app.get('/routes/empleado', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM empleado ORDER BY empleado_id DESC');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching empleados:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// CREAR EMPLEADO (Actualizado con documento)
+app.post('/routes/empleado', async (req, res) => {
+    const { documento, nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;
+
+    try {
+        const query = await pool.query(
+            'INSERT INTO empleado (documento, nombres, apellidos, especialidad, telefono, correo, cargo) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            [documento, nombres, apellidos, especialidad, telefono, correo, cargo]
+        );
+
+        res.status(201).json({
+            success: true,
+            message: 'Empleado registrado correctamente',
+            data: query.rows[0]
+        });
+    } catch (error) {
+        console.error('Error inserting data:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// EDITAR EMPLEADO
+app.put('/routes/empleado/:id', async (req, res) => {
+    const { id } = req.params;
+    const { documento, nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;
+    try {
+        const result = await pool.query(
+            `UPDATE empleado SET 
+                documento=$1, nombres=$2, apellidos=$3, 
+                especialidad=$4, telefono=$5, correo=$6, cargo=$7
+             WHERE empleado_id=$8 RETURNING *`,
+            [documento, nombres, apellidos, especialidad, telefono, correo, cargo, id]
+        );
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error updating empleado:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// ELIMINAR EMPLEADO
+app.delete('/routes/empleado/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM empleado WHERE empleado_id=$1', [id]);
+        res.json({ success: true, message: 'Empleado eliminado correctamente' });
+    } catch (error) {
+        console.error('Error deleting empleado:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
 });

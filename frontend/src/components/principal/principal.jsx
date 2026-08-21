@@ -37,7 +37,7 @@ export default function Navegacion() {
                                 </svg>
                             </button>
                             <a href="#" className="flex ms-2 md:me-24">
-                                <img src="https://flowbite.com/docs/images/logo.svg" className="h-6 me-3" alt="Centraly" />
+                                <img src="/Logo-orange-solid.png" className="h-6 me-3" alt="Centraly" />
                                 <span className="self-center text-lg font-semibold whitespace-nowrap text-white">Centraly</span>
                             </a>
                         </div>
@@ -101,7 +101,7 @@ export default function Navegacion() {
                     end
                     className={({ isActive }) =>
                         isActive
-                        ? "flex items-center px-2 py-1.5 rounded-md bg-linear-to-r from-gray-900 to-orange-700 text-white transition"
+                        ? "flex items-center px-2 py-1.5 rounded-md bg-linear-to-r from-orange-950 to-orange-900 text-white transition"
                         : "flex items-center px-2 py-1.5 rounded-md hover:bg-linear-to-r hover:from-gray-900 hover:to-orange-700 hover:opacity-90 transition text-gray-300"
                     }
                     >

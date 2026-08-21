@@ -24,7 +24,7 @@ function App() {
     {/* Layout con Nav + Outlet */}
                 <Route path="/app" element={<Principal />}>
                     <Route index element={<Inicio/>} />
-                    <Route path="personal" element={<Personal />} />
+                    <Route path="personal" element={<Personal />} />                 
                     <Route path="equipo" element={<EquipoForm />} />
                     <Route path="reporte" element={<Reporte />} />
                     <Route path="reporteclientes" element={<Reporteclientes />} />

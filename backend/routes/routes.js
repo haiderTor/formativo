@@ -81,8 +81,6 @@ app.post('/routes/usuario', async (req, res) => {
     }
 });
 
-
-
 // OBTENER TODOS LOS CLIENTES
 app.get('/routes/clientes', async (req, res) => {
     try {
@@ -103,7 +101,7 @@ app.post('/routes/clientes', async (req, res) => {
             'INSERT INTO clientes(tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', 
             [tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad]
         );
-        res.status(201).json(query.rows[0]); // Devuelve el objeto directo para React
+        res.status(201).json(query.rows[0]);
         console.log('Cliente registrado correctamente:', query.rows[0]);
     } catch (error) {
         console.error('Error inserting data:', error);
@@ -126,7 +124,7 @@ app.put('/routes/clientes/:id', async (req, res) => {
                 correo=$6, 
                 direccion=$7, 
                 ciudad=$8
-             WHERE cliente_id=$9 RETURNING *`,
+               WHERE cliente_id=$9 RETURNING *`,
             [tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad, id]
         );
         res.json(result.rows[0]);
@@ -149,31 +147,79 @@ app.delete('/routes/clientes/:id', async (req, res) => {
 });
 
 // ==========================================
+// EMPLEADOS
+// ==========================================
 
+// OBTENER TODOS LOS EMPLEADOS
+app.get('/routes/empleado', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM empleado ORDER BY empleado_id DESC');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching empleados:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// CREAR EMPLEADO (Actualizado con tipo_documento y documento)
 app.post('/routes/empleado', async (req, res) => {
-    const { nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;
+    const { tipo_documento, documento, nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;
 
     try {
         const query = await pool.query(
-            'INSERT INTO empleado (nombres, apellidos, especialidad, telefono, correo, cargo) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-            [nombres, apellidos, especialidad, telefono, correo, cargo]
+            'INSERT INTO empleado (tipo_documento, documento, nombres, apellidos, especialidad, telefono, correo, cargo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+            [tipo_documento, documento, nombres, apellidos, especialidad, telefono, correo, cargo]
         );
 
-        res.status(201).json({
-            success: true,
-            message: 'Empleado registrado correctamente',
-            data: query.rows[0]
-        });
-
+        // Devolvemos el objeto directo tal cual lo espera el frontend
+        res.status(201).json(query.rows[0]);
         console.log('Empleado registrado correctamente:', query.rows[0]);
     } catch (error) {
         console.error('Error inserting data:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Internal Server Error'
-        });
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 });
+
+// EDITAR EMPLEADO (Actualizado con tipo_documento y documento)
+app.put('/routes/empleado/:id', async (req, res) => {
+    const { id } = req.params;
+    const { tipo_documento, documento, nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;
+    try {
+        const result = await pool.query(
+            `UPDATE empleado SET 
+                tipo_documento=$1, 
+                documento=$2, 
+                nombres=$3, 
+                apellidos=$4, 
+                especialidad=$5, 
+                telefono=$6, 
+                correo=$7, 
+                cargo=$8
+               WHERE empleado_id=$9 RETURNING *`,
+            [tipo_documento, documento, nombres, apellidos, especialidad, telefono, correo, cargo, id]
+        );
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error updating empleado:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// ELIMINAR EMPLEADO
+app.delete('/routes/empleado/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM empleado WHERE empleado_id=$1', [id]);
+        res.json({ success: true, message: 'Empleado eliminado correctamente' });
+    } catch (error) {
+        console.error('Error deleting empleado:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// ==========================================
+// OTROS ENDPOINTS (Equipos, Tickets, Servicios)
+// ==========================================
 
 app.post('/routes/equipo', async (req, res) => {
     const { tipo_equipo, modelo, referencia, numero_serie, estado, marca_id, cliente_id } = req.body;
@@ -328,7 +374,7 @@ app.delete('/routes/tickets/:id', async (req, res) => {
         res.json({ success: true, message: 'Ticket eliminado correctamente' });
     } catch (error) {
         console.error('Error deleting ticket:', error);
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
+        res.status(500).json({ success: false, type: 'Internal Server Error' });
     }
 });
 
@@ -362,67 +408,4 @@ app.post('/routes/servicios', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor ejecutándose en el puerto ${PORT}`);
-});
-
-// OBTENER TODOS LOS EMPLEADOS
-app.get('/routes/empleado', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM empleado ORDER BY empleado_id DESC');
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching empleados:', error);
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
-    }
-});
-
-// CREAR EMPLEADO (Actualizado con documento)
-app.post('/routes/empleado', async (req, res) => {
-    const { documento, nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;
-
-    try {
-        const query = await pool.query(
-            'INSERT INTO empleado (documento, nombres, apellidos, especialidad, telefono, correo, cargo) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-            [documento, nombres, apellidos, especialidad, telefono, correo, cargo]
-        );
-
-        res.status(201).json({
-            success: true,
-            message: 'Empleado registrado correctamente',
-            data: query.rows[0]
-        });
-    } catch (error) {
-        console.error('Error inserting data:', error);
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
-    }
-});
-
-// EDITAR EMPLEADO
-app.put('/routes/empleado/:id', async (req, res) => {
-    const { id } = req.params;
-    const { documento, nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;
-    try {
-        const result = await pool.query(
-            `UPDATE empleado SET 
-                documento=$1, nombres=$2, apellidos=$3, 
-                especialidad=$4, telefono=$5, correo=$6, cargo=$7
-             WHERE empleado_id=$8 RETURNING *`,
-            [documento, nombres, apellidos, especialidad, telefono, correo, cargo, id]
-        );
-        res.json(result.rows[0]);
-    } catch (error) {
-        console.error('Error updating empleado:', error);
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
-    }
-});
-
-// ELIMINAR EMPLEADO
-app.delete('/routes/empleado/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        await pool.query('DELETE FROM empleado WHERE empleado_id=$1', [id]);
-        res.json({ success: true, message: 'Empleado eliminado correctamente' });
-    } catch (error) {
-        console.error('Error deleting empleado:', error);
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
-    }
 });

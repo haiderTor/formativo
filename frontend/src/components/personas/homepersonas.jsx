@@ -27,10 +27,11 @@ export default function GestionCentralizada() {
         ciudad: "",
     });
 
-    // ESTADOS DE EMPLEADOS
+    // ESTADOS DE EMPLEADOS (Actualizados con tipo_documento y documento)
     const [empleados, setEmpleados] = useState([]);
     const [newEmpleado, setNewEmpleado] = useState({
-        documento: "", // Agregado para cumplir con la columna "Identificación"
+        tipo_documento: "",
+        documento: "",
         nombres: "",
         apellidos: "",
         especialidad: "",
@@ -124,17 +125,12 @@ export default function GestionCentralizada() {
                     body: JSON.stringify(payload),
                 });
                 
-                // Adaptación para la respuesta de éxito de tu API de empleados
+                const data = await response.json();
                 if (isCliente) {
-                    const saved = await response.json();
-                    setClientes([...clientes, saved]);
+                    setClientes([...clientes, data]);
                 } else {
-                    const data = await response.json();
-                    if (data.success || data.empleado_id) { 
-                        // Depende de cómo retorne exactamente tu backend, ajusta si es necesario
-                        setEmpleados([...empleados, { ...payload, empleado_id: data.empleado_id || Date.now() }]);
-                        alert("Empleado registrado correctamente");
-                    }
+                    setEmpleados([...empleados, data]);
+                    alert("Empleado registrado correctamente");
                 }
             }
             setShowModal(false);
@@ -161,7 +157,6 @@ export default function GestionCentralizada() {
             const endpoint = isCliente 
                 ? `http://localhost:3000/routes/clientes/${itemToDelete}`
                 : `http://localhost:3000/routes/empleado/${itemToDelete}`;
-            const idField = isCliente ? "cliente_id" : "empleado_id";
 
             try {
                 await fetch(endpoint, { method: "DELETE" });
@@ -187,7 +182,7 @@ export default function GestionCentralizada() {
         if (activeTab === "clientes") {
             setNewCliente({ tipo_documento: "", documento: "", nombres: "", apellidos: "", telefono: "", correo: "", direccion: "", ciudad: "" });
         } else {
-            setNewEmpleado({ documento: "", nombres: "", apellidos: "", especialidad: "", telefono: "", correo: "", cargo: "" });
+            setNewEmpleado({ tipo_documento: "", documento: "", nombres: "", apellidos: "", especialidad: "", telefono: "", correo: "", cargo: "" });
         }
         setShowModal(true);
     };
@@ -289,11 +284,7 @@ export default function GestionCentralizada() {
 
                                         <td className="block md:table-cell p-4 md:p-3 text-gray-300 md:pl-6 whitespace-nowrap border-b border-gray-700 md:border-none">
                                             <span className="block md:hidden text-xs font-bold text-gray-500 uppercase mb-1">Identificación</span>
-                                            {activeTab === "clientes" ? (
-                                                <span>{item.tipo_documento}: {item.documento}</span>
-                                            ) : (
-                                                <span>{item.documento}</span>
-                                            )}
+                                            <span>{item.tipo_documento}: {item.documento}</span>
                                         </td>
 
                                         <td className="block md:table-cell p-4 md:p-3">
@@ -406,10 +397,23 @@ export default function GestionCentralizada() {
                                 </>
                             )}
 
-                            {/* FORMULARIO PARA EMPLEADOS */}
+                            {/* FORMULARIO PARA EMPLEADOS (Actualizado) */}
                             {activeTab === "empleados" && (
                                 <>
-                                    <input type="text" name="documento" placeholder="Número de Identificación" value={newEmpleado.documento} onChange={handleEmpleadoChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" required />
+                                    <select
+                                        name="tipo_documento"
+                                        value={newEmpleado.tipo_documento}
+                                        onChange={handleEmpleadoChange}
+                                        className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500"
+                                        required
+                                    >
+                                        <option value="">Tipo de Documento...</option>
+                                        <option value="CC">Cédula de Ciudadanía</option>
+                                        <option value="NIT">NIT</option>
+                                        <option value="TI">Tarjeta de Identidad</option>
+                                        <option value="CE">Cédula de Extranjería</option>
+                                    </select>
+                                    <input type="text" name="documento" placeholder="Número de Documento" value={newEmpleado.documento} onChange={handleEmpleadoChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" required />
                                     <div className="flex flex-col sm:flex-row gap-2">
                                         <input type="text" name="nombres" placeholder="Nombres" value={newEmpleado.nombres} onChange={handleEmpleadoChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" required />
                                         <input type="text" name="apellidos" placeholder="Apellidos" value={newEmpleado.apellidos} onChange={handleEmpleadoChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" required />

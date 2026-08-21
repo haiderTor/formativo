@@ -21,7 +21,7 @@ export default function Navegacion() {
     return (
         <div className="min-h-screen bg-[#121316]">
             {/* --- BARRA SUPERIOR (NAVBAR) --- */}
-            <nav className="fixed top-0 z-50 w-full bg-[#121316] border-b border-default">
+            <nav className="fixed top-0 z-50 w-full bg-[#121316]">
                 <div className="px-3 py-3 lg:px-5 lg:pl-3">
                     <div className="flex items-center justify-between">
                         {/* Logo y Botón de Menú Móvil */}
@@ -87,81 +87,101 @@ export default function Navegacion() {
 
             {/* --- BARRA LATERAL (SIDEBAR) --- */}
             <aside
-                className={`fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform sm:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
-                aria-label="Sidebar"
+            className={`fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform sm:translate-x-0 ${
+                isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
+            aria-label="Sidebar"
             >
-                <div className="h-full px-3 py-4 overflow-y-auto bg-[#121316] border-e border-default">
-                    <ul className="space-y-2 font-medium">
-                        {/* Tablero / Servicios */}
-                        <li>
-                            <NavLink to="/app" className={getNavLinkClass}>
-                                <svg className="w-5 h-5 transition duration-75 group-hover:text-fg-brand shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6.025A7.5 7.5 0 1 0 17.975 14H10V6.025Z" />
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.5 3c-.169 0-.334.014-.5.025V11h7.975c.011-.166.025-.331.025-.5A7.5 7.5 0 0 0 13.5 3Z" />
-                                </svg>
-                                <span className="ms-3">Servicios</span>
-                            </NavLink>
-                        </li>
+            <div className="h-full px-3 py-4 overflow-y-auto bg-[#121316]">
+                <ul className="space-y-2 font-medium">
+                {/* Servicios */}
+                <li>
+                    <NavLink
+                    to="/app"
+                    end
+                    className={({ isActive }) =>
+                        isActive
+                        ? "flex items-center px-2 py-1.5 rounded-md bg-linear-to-r from-gray-900 to-orange-700 text-white transition"
+                        : "flex items-center px-2 py-1.5 rounded-md hover:bg-linear-to-r hover:from-gray-900 hover:to-orange-700 hover:opacity-90 transition text-gray-300"
+                    }
+                    >
+                    <svg className="w-5 h-5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6.025A7.5 7.5 0 1 0 17.975 14H10V6.025Z" />
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.5 3c-.169 0-.334.014-.5.025V11h7.975c.011-.166.025-.331.025-.5A7.5 7.5 0 0 0 13.5 3Z" />
+                    </svg>
+                    <span className="ms-3">Servicios</span>
+                    </NavLink>
+                </li>
 
-                        {/* Personas (Enlace directo a homepersonas) */}
-                        <li>
-                            <NavLink to="homepersonas" className={getNavLinkClass}>
-                                <svg className="shrink-0 w-5 h-5 transition duration-75 group-hover:text-fg-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312" />
-                                </svg>
-                                <span className="ms-3">Personas</span>
-                            </NavLink>
-                        </li>
+                {/* Personas */}
+                <li>
+                    <NavLink
+                    to="/app/homepersonas"
+                    className={({ isActive }) =>
+                        isActive
+                        ? "flex items-center px-2 py-1.5 rounded-md bg-linear-to-r from-gray-900 to-orange-700 text-white transition"
+                        : "flex items-center px-2 py-1.5 rounded-md hover:bg-linear-to-r hover:from-gray-990 hover:to-orange-700 hover:opacity-90 transition text-gray-300"
+                    }
+                    >
+                    <svg className="w-5 h-5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312" />
+                    </svg>
+                    <span className="ms-3">Personas</span>
+                    </NavLink>
+                </li>
 
-                        {/* Equipo */}
-                        <li>
-                            <NavLink to="equipo" className={getNavLinkClass}>
-                                <svg className="shrink-0 w-5 h-5 transition duration-75 group-hover:text-fg-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 5v14M9 5v14M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" />
-                                </svg>
-                                <span className="ms-3">Equipo</span>
-                            </NavLink>
-                        </li>
+                {/* Equipo */}
+                <li>
+                    <NavLink
+                    to="/app/equipo"
+                    className={({ isActive }) =>
+                        isActive
+                        ? "flex items-center px-2 py-1.5 rounded-md bg-linear-to-r from-gray-990 to-orange-700 text-white transition"
+                        : "flex items-center px-2 py-1.5 rounded-md hover:bg-linear-to-r hover:from-gray-990 hover:to-orange-700 hover:opacity-90 transition text-gray-300"
+                    }
+                    >
+                    <svg className="w-5 h-5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 5v14M9 5v14M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" />
+                    </svg>
+                    <span className="ms-3">Equipo</span>
+                    </NavLink>
+                </li>
 
-                        {/* Menú Desplegable de Reportes */}
-                        <li>
-                            <button
-                                type="button"
-                                onClick={() => setIsReportesOpen(!isReportesOpen)}
-                                className={`flex items-center w-full justify-between px-2 py-1.5 rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group transition-colors ${isReportesOpen ? 'text-fg-brand bg-neutral-tertiary' : 'text-body'}`}
-                            >
-                                <div className="flex items-center">
-                                    <svg className="shrink-0 w-5 h-5 transition duration-75 group-hover:text-fg-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312" />
-                                    </svg>
-                                    <span className="ms-3 whitespace-nowrap">Reportes</span>
-                                </div>
-                                <svg className={`w-5 h-5 transition-transform ${isReportesOpen ? 'rotate-180' : ''}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 9-7 7-7-7" />
-                                </svg>
-                            </button>
+                {/* Reportes */}
+                <li>
+                    <NavLink
+                    to="/app/reporte"
+                    className={({ isActive }) =>
+                        isActive
+                        ? "flex items-center px-2 py-1.5 rounded-md bg-linear-to-r from-gray-990 to-orange-700 text-white transition"
+                        : "flex items-center px-2 py-1.5 rounded-md hover:bg-linear-to-r hover:from-gray-990 hover:to-orange-700 hover:opacity-90 transition text-gray-300"
+                    }
+                    >
+                    <svg className="w-5 h-5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312" />
+                    </svg>
+                    <span className="ms-3">Reportes</span>
+                    </NavLink>
+                </li>
 
-                            {/* Submenú de Reportes */}
-                            <ul className={`py-2 space-y-2 overflow-hidden transition-all duration-300 ${isReportesOpen ? 'block' : 'hidden'}`}>
-                                <li><NavLink to="reporteclientes" className={getDropdownLinkClass}>Clientes</NavLink></li>
-                                <li><NavLink to="reporteequipos" className={getDropdownLinkClass}>Equipos</NavLink></li>
-                                <li><NavLink to="reporteticket" className={getDropdownLinkClass}>Tickets</NavLink></li>
-                                <li><NavLink to="reportefactura" className={getDropdownLinkClass}>Facturas</NavLink></li>
-                                <li><NavLink to="reporteservicio" className={getDropdownLinkClass}>Servicios</NavLink></li>
-                            </ul>
-                        </li>
-
-                        {/* Tickets Independientes */}
-                        <li>
-                            <NavLink to="tickets" className={getNavLinkClass}>
-                                <svg className="shrink-0 w-5 h-5 transition duration-75 group-hover:text-fg-brand" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 5v14M9 5v14M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" />
-                                </svg>
-                                <span className="ms-3">Tickets</span>
-                            </NavLink>
-                        </li>
-                    </ul>
-                </div>
+                {/* Tickets */}
+                <li>
+                    <NavLink
+                    to="/app/tickets"
+                    className={({ isActive }) =>
+                        isActive
+                        ? "flex items-center px-2 py-1.5 rounded-md bg-linear-to-r from-gray-990 to-orange-700 text-white transition"
+                        : "flex items-center px-2 py-1.5 rounded-md hover:bg-linear-to-r hover:from-gray-990 hover:to-orange-700 hover:opacity-90 transition text-gray-300"
+                    }
+                    >
+                    <svg className="w-5 h-5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6M5 8h14a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Zm3-4h8v4H8V4Z" />
+                    </svg>
+                    <span className="ms-3">Tickets</span>
+                    </NavLink>
+                </li>
+                </ul>
+            </div>
             </aside>
 
             {/* --- CONTENEDOR PRINCIPAL --- */}

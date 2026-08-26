@@ -161,7 +161,7 @@ app.get('/routes/empleado', async (req, res) => {
     }
 });
 
-// CREAR EMPLEADO (Actualizado con tipo_documento y documento)
+// CREAR EMPLEADO
 app.post('/routes/empleado', async (req, res) => {
     const { tipo_documento, documento, nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;
 
@@ -171,7 +171,6 @@ app.post('/routes/empleado', async (req, res) => {
             [tipo_documento, documento, nombres, apellidos, especialidad, telefono, correo, cargo]
         );
 
-        // Devolvemos el objeto directo tal cual lo espera el frontend
         res.status(201).json(query.rows[0]);
         console.log('Empleado registrado correctamente:', query.rows[0]);
     } catch (error) {
@@ -180,7 +179,7 @@ app.post('/routes/empleado', async (req, res) => {
     }
 });
 
-// EDITAR EMPLEADO (Actualizado con tipo_documento y documento)
+// EDITAR EMPLEADO
 app.put('/routes/empleado/:id', async (req, res) => {
     const { id } = req.params;
     const { tipo_documento, documento, nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;
@@ -218,28 +217,76 @@ app.delete('/routes/empleado/:id', async (req, res) => {
 });
 
 // ==========================================
-// OTROS ENDPOINTS (Equipos, Tickets, Servicios)
+// EQUIPOS
 // ==========================================
 
-app.post('/routes/equipo', async (req, res) => {
-    const { tipo_equipo, modelo, referencia, numero_serie, estado, marca_id, cliente_id } = req.body;
-
+// OBTENER TODOS LOS EQUIPOS
+app.get('/routes/equipo', async (req, res) => {
     try {
-        const query = await pool.query('INSERT INTO equipo(tipo_equipo,modelo,referencia,numero_serie,estado,marca_id,cliente_id) VALUES($1, $2, $3,$4, $5, $6, $7) RETURNING *', [tipo_equipo, modelo, referencia, numero_serie, estado, marca_id, cliente_id]);
-        res.status(201).json({
-            success: true,
-            message: 'Data inserted successfully',
-            data: query.rows[0]
-        });
-        console.log('item registrado correctamente:', query.rows[0]);
+        const result = await pool.query('SELECT * FROM equipo ORDER BY equipo_id DESC');
+        res.json(result.rows);
     } catch (error) {
-        console.error('Error inserting data:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Internal Server Error'
-        });
+        console.error('Error fetching equipos:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 });
+
+// CREAR EQUIPO
+app.post('/routes/equipo', async (req, res) => {
+    const { tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id } = req.body;
+
+    try {
+        const query = await pool.query(
+            'INSERT INTO equipo(tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *', 
+            [tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id]
+        );
+        res.status(201).json(query.rows[0]);
+        console.log('Equipo registrado correctamente:', query.rows[0]);
+    } catch (error) {
+        console.error('Error inserting equipo:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// EDITAR EQUIPO
+app.put('/routes/equipo/:id', async (req, res) => {
+    const { id } = req.params;
+    const { tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id } = req.body;
+    try {
+        const result = await pool.query(
+            `UPDATE equipo SET 
+                tipo_equipo=$1, 
+                modelo=$2, 
+                referencia=$3, 
+                numero_serie=$4, 
+                observaciones=$5, 
+                marca_id=$6, 
+                cliente_id=$7 
+               WHERE equipo_id=$8 RETURNING *`,
+            [tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id, id]
+        );
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error updating equipo:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// ELIMINAR EQUIPO
+app.delete('/routes/equipo/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM equipo WHERE equipo_id=$1', [id]);
+        res.json({ success: true, message: 'Equipo eliminado correctamente' });
+    } catch (error) {
+        console.error('Error deleting equipo:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// ==========================================
+// REPORTES Y LISTAS AUXILIARES
+// ==========================================
 
 app.get('/routes/reporteclientes', async (req, res) => {
     try {
@@ -297,7 +344,10 @@ app.get('/routes/listaservicios', async (req, res) => {
     }
 });
 
-// Endpoints de Tickets
+// ==========================================
+// TICKETS
+// ==========================================
+
 app.get('/routes/tickets', async (req, res) => {
     try {
         const result = await pool.query(`
@@ -357,7 +407,7 @@ app.put('/routes/tickets/:id', async (req, res) => {
                 observaciones=$5, 
                 equipo_id=$6, 
                 empleado_id=$7
-             WHERE ticket_id=$8 RETURNING *`,
+               WHERE ticket_id=$8 RETURNING *`,
             [fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id, id]
         );
         res.json(result.rows[0]);
@@ -374,11 +424,14 @@ app.delete('/routes/tickets/:id', async (req, res) => {
         res.json({ success: true, message: 'Ticket eliminado correctamente' });
     } catch (error) {
         console.error('Error deleting ticket:', error);
-        res.status(500).json({ success: false, type: 'Internal Server Error' });
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 });
 
-// Endpoints de Servicios
+// ==========================================
+// SERVICIOS
+// ==========================================
+
 app.get('/routes/servicios', async (req, res) => {
     try {
         const result = await pool.query(
@@ -401,6 +454,37 @@ app.post('/routes/servicios', async (req, res) => {
         res.status(201).json(result.rows[0]);
     } catch (error) {
         console.error('Error creating servicio:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+app.put('/routes/servicios/:id', async (req, res) => {
+    const { id } = req.params;
+    const { nombre, descripcion, precio_base, observaciones } = req.body;
+    try {
+        const result = await pool.query(
+            `UPDATE servicio SET 
+                nombre=$1, 
+                descripcion=$2, 
+                precio_base=$3, 
+                observaciones=$4 
+               WHERE servicio_id=$5 RETURNING *`,
+            [nombre, descripcion, precio_base, observaciones, id]
+        );
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error updating servicio:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+app.delete('/routes/servicios/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM servicio WHERE servicio_id=$1', [id]);
+        res.json({ success: true, message: 'Servicio eliminado correctamente' });
+    } catch (error) {
+        console.error('Error deleting servicio:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 });

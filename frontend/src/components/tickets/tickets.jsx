@@ -356,7 +356,7 @@ return (
                     <th className="px-4 py-3 text-left text-xs text-gray-400">Última actualización</th>
                     <th className="px-4 py-3 text-right text-xs text-gray-400">Acciones</th>
                 </tr>
-                </thead>-0
+                </thead>
 
                 <tbody className="divide-y divide-[#1f1f1f]">
                 {filteredTickets.map((t) => (

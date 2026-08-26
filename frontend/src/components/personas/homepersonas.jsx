@@ -27,7 +27,7 @@ export default function GestionCentralizada() {
         ciudad: "",
     });
 
-    // ESTADOS DE EMPLEADOS (Actualizados con tipo_documento y documento)
+    // ESTADOS DE EMPLEADOS
     const [empleados, setEmpleados] = useState([]);
     const [newEmpleado, setNewEmpleado] = useState({
         tipo_documento: "",
@@ -188,141 +188,188 @@ export default function GestionCentralizada() {
     };
 
     return (
-        <div className="p-4 md:p-6 bg-[#121316] min-h-screen text-white">
-            
-            {/* TABS DE NAVEGACIÓN */}
-            <div className="flex space-x-4 mb-6 border-b border-gray-700 pb-2">
-                <button 
-                    onClick={() => handleTabChange("clientes")}
-                    className={`pb-2 px-4 text-lg font-semibold transition-colors ${activeTab === "clientes" ? "text-blue-500 border-b-2 border-blue-500" : "text-gray-400 hover:text-gray-200"}`}
-                >
-                    Clientes
-                </button>
-                <button 
-                    onClick={() => handleTabChange("empleados")}
-                    className={`pb-2 px-4 text-lg font-semibold transition-colors ${activeTab === "empleados" ? "text-blue-500 border-b-2 border-blue-500" : "text-gray-400 hover:text-gray-200"}`}
-                >
-                    Empleados
-                </button>
-            </div>
+        <div className="p-4 sm:p-6 bg-[#0f1113] min-h-screen text-gray-200">
+            {/* Header: título + acciones */}
+            <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="text-xl sm:text-2xl font-bold text-white capitalize">{activeTab}</h1>
+                </div>
 
-            {/* HEADER Y BOTONES */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <h1 className="text-2xl font-bold capitalize">{activeTab}</h1>
-                <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full md:w-auto">
-                    <button className="w-full sm:w-auto bg-[#6c757d] hover:bg-gray-500 text-white px-4 py-2 rounded transition-transform hover:scale-105 shadow-md">
-                        Importar
-                    </button>
-                    <button className="w-full sm:w-auto bg-[#2f6fed] hover:bg-blue-600 text-white px-4 py-2 rounded transition-transform hover:scale-105 shadow-md">
-                        Exportar {activeTab}
-                    </button>
-                    <button
-                        onClick={openCreateModal}
-                        className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-transform hover:scale-105 shadow-md"
-                    >
-                        Crear {activeTab === "clientes" ? "Cliente" : "Empleado"}
-                    </button>
+                <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 w-full xl:w-auto">
+                    {/* Pestañas / filtros */}
+                    <div className="flex flex-wrap gap-2 items-center bg-[#121316]/40 backdrop-blur-sm rounded-md p-1">
+                        {["clientes", "empleados"].map((tab) => (
+                            <button
+                                key={tab}
+                                onClick={() => handleTabChange(tab)}
+                                className={`px-3 py-1.5 text-sm font-medium rounded-md transition whitespace-nowrap capitalize ${
+                                    activeTab === tab
+                                        ? "bg-linear-to-r from-orange-600 to-orange-400 text-white shadow"
+                                        : "text-gray-300 hover:bg-white/5"
+                                }`}
+                            >
+                                {tab}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Buscador */}
+                    <div className="relative w-full lg:w-64">
+                        <input
+                            value={search}
+                            onChange={(e) => {
+                                setSearch(e.target.value);
+                                setCurrentPage(1);
+                            }}
+                            placeholder={`Buscar ${activeTab}...`}
+                            className="w-full pl-3 pr-10 py-2 rounded-md bg-[#0b0c0d] border border-[#222] text-sm text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        />
+                        <svg className="w-4 h-4 text-gray-500 absolute right-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" />
+                        </svg>
+                    </div>
+
+                    {/* Botones */}
+                    <div className="flex items-center gap-2">
+                        <button className="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-200 rounded-md shadow-sm text-sm font-semibold transition-transform hover:scale-105">
+                            Importar
+                        </button>
+                        <button className="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-200 rounded-md shadow-sm text-sm font-semibold transition-transform hover:scale-105">
+                            Exportar
+                        </button>
+                        <button
+                            onClick={openCreateModal}
+                            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md shadow-sm text-sm font-semibold transition-transform hover:scale-105 w-full sm:w-auto"
+                        >
+                            + Nuevo {activeTab === "clientes" ? "Cliente" : "Empleado"}
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {/* BUSCADOR */}
-            <input
-                type="text"
-                placeholder={`Buscar ${activeTab}...`}
-                value={search}
-                onChange={(e) => {
-                    setSearch(e.target.value);
-                    setCurrentPage(1); 
-                }}
-                className="w-full p-2 mb-4 rounded bg-gray-800 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700"
-            />
-
-            {/* TABLA RESPONSIVE */}
-            <div className="bg-transparent md:bg-gray-800 rounded-lg md:shadow-lg md:border md:border-gray-700">
-                {currentItems.length === 0 ? (
-                    <div className="p-6 text-center bg-gray-800 rounded-lg">
-                        <p className="text-gray-400">No hay {activeTab} registrados aún o no coinciden con la búsqueda.</p>
-                    </div>
-                ) : (
-                    <table className="w-full text-left border-collapse block md:table">
-                        <thead className="hidden md:table-header-group">
-                            <tr className="bg-gray-900 border-b border-gray-700 text-gray-200">
-                                <th className="p-3 w-12 text-center"></th>
-                                <th className="p-3 text-left">Nombre</th>
-                                {activeTab === "empleados" && <th className="p-3 text-left">Cargo</th>}
-                                <th className="p-3 text-left pl-6">Identificación</th>
-                                <th className="p-3 text-center w-32">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody className="block md:table-row-group">
-                            {currentItems.map((item) => {
-                                const id = activeTab === "clientes" ? item.cliente_id : item.empleado_id;
-                                return (
-                                    <tr
-                                        key={id}
-                                        className="block md:table-row bg-gray-800 md:bg-transparent border border-gray-700 md:border-0 md:border-b md:border-gray-700 hover:bg-gray-750 transition-colors mb-4 md:mb-0 rounded-lg md:rounded-none"
-                                    >
-                                        <td className="hidden md:table-cell p-3 text-center">
-                                            <button className="text-gray-400 border border-gray-600 px-2 py-0.5 rounded text-sm hover:bg-gray-700 hover:text-white transition-colors">
-                                                +
-                                            </button>
-                                        </td>
-
-                                        <td className="block md:table-cell p-4 md:p-3 text-gray-300 border-b border-gray-700 md:border-none">
-                                            <span className="block md:hidden text-xs font-bold text-gray-500 uppercase mb-1">Nombre</span>
-                                            <span className="font-semibold md:font-normal text-lg md:text-base">
-                                                {item.nombres} {item.apellidos}
-                                            </span>
-                                        </td>
-
+            {/* Tabla / Lista: en mobile mostramos tarjetas, en md+ la tabla */}
+            <div className="space-y-4">
+                {/* Mobile list (cards) */}
+                <ul className="md:hidden space-y-3">
+                    {currentItems.map((item) => {
+                        const id = activeTab === "clientes" ? item.cliente_id : item.empleado_id;
+                        return (
+                            <li key={id} className="border border-[#222] p-3 rounded-xl bg-[#0b0c0d]/60">
+                                <div className="flex items-start justify-between gap-3">
+                                    <div>
+                                        <div className="text-sm font-medium text-white">{item.nombres} {item.apellidos}</div>
+                                        <div className="text-xs text-gray-400">{item.tipo_documento}: {item.documento}</div>
+                                    </div>
+                                    <div className="flex flex-col items-end gap-2">
                                         {activeTab === "empleados" && (
-                                            <td className="block md:table-cell p-4 md:p-3 text-gray-300 border-b border-gray-700 md:border-none">
-                                                <span className="block md:hidden text-xs font-bold text-gray-500 uppercase mb-1">Cargo</span>
-                                                <span>{item.cargo}</span>
-                                            </td>
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-700 text-white">
+                                                {item.cargo}
+                                            </span>
                                         )}
+                                    </div>
+                                </div>
+                                <div className="mt-3">
+                                    <div className="text-sm text-gray-300 line-clamp-1">{item.correo || "—"}</div>
+                                    <div className="text-xs text-gray-400 mt-1">{item.telefono || "—"}</div>
+                                </div>
+                                <div className="flex items-center justify-end mt-3 gap-2">
+                                    <button onClick={() => handleEdit(item)} className="text-xs px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 text-gray-200 transition">Editar</button>
+                                    <button onClick={() => setItemToDelete(id)} className="text-xs px-2 py-1 rounded-md bg-red-600 hover:bg-red-700 text-white transition">Borrar</button>
+                                </div>
+                            </li>
+                        );
+                    })}
+                    {currentItems.length === 0 && (
+                        <div className="p-6 text-center text-sm text-gray-500 bg-[#0b0c0d]/60 border border-[#222] rounded-xl">
+                            No hay {activeTab} registrados aún o no coinciden con la búsqueda.
+                        </div>
+                    )}
+                </ul>
 
-                                        <td className="block md:table-cell p-4 md:p-3 text-gray-300 md:pl-6 whitespace-nowrap border-b border-gray-700 md:border-none">
-                                            <span className="block md:hidden text-xs font-bold text-gray-500 uppercase mb-1">Identificación</span>
-                                            <span>{item.tipo_documento}: {item.documento}</span>
-                                        </td>
+                {/* Desktop table */}
+                <div className="hidden md:block bg-[#0b0c0d]/60 border border-[#222] rounded-xl overflow-hidden">
+                    <div className="px-4 py-3 border-b border-[#1f1f1f] flex items-center justify-between">
+                        <div className="text-sm text-gray-300 font-semibold capitalize">{activeTab}</div>
+                        <div className="text-xs text-gray-400">Mostrando {filteredData.length} resultados</div>
+                    </div>
 
-                                        <td className="block md:table-cell p-4 md:p-3">
-                                            <div className="flex items-center justify-end md:justify-center space-x-6 md:space-x-3">
-                                                <button
-                                                    onClick={() => handleEdit(item)}
-                                                    className="text-blue-500 hover:text-blue-400 hover:scale-125 md:hover:scale-110 transition-transform p-2 md:p-0"
-                                                    title="Editar"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                                    </svg>
-                                                </button>
-                                                <button
-                                                    onClick={() => setItemToDelete(id)}
-                                                    className="text-red-500 hover:text-red-400 hover:scale-125 md:hover:scale-110 transition-transform font-bold text-xl md:text-lg p-2 md:p-0"
-                                                    title="Eliminar"
-                                                >
-                                                    X
-                                                </button>
-                                            </div>
-                                        </td>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-[#1f1f1f]">
+                            <thead className="bg-[#0f1113]">
+                                <tr>
+                                    <th className="px-4 py-3 text-left text-xs text-orange-400">Identificación</th>
+                                    <th className="px-4 py-3 text-left text-xs text-gray-400">Nombre</th>
+                                    <th className="px-4 py-3 text-left text-xs text-gray-400">Contacto</th>
+                                    {activeTab === "empleados" && <th className="px-4 py-3 text-left text-xs text-gray-400">Cargo / Especialidad</th>}
+                                    {activeTab === "clientes" && <th className="px-4 py-3 text-left text-xs text-gray-400">Dirección / Ciudad</th>}
+                                    <th className="px-4 py-3 text-right text-xs text-gray-400">Acciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody className="divide-y divide-[#1f1f1f]">
+                                {currentItems.map((item) => {
+                                    const id = activeTab === "clientes" ? item.cliente_id : item.empleado_id;
+                                    return (
+                                        <tr key={id} className="hover:bg-white/5 transition-colors">
+                                            <td className="px-4 py-3 align-top w-40">
+                                                <div className="text-sm font-medium text-white">{item.documento}</div>
+                                                <div className="text-xs text-gray-500">{item.tipo_documento}</div>
+                                            </td>
+
+                                            <td className="px-4 py-3 align-top">
+                                                <div className="text-sm text-white font-medium">{item.nombres} {item.apellidos}</div>
+                                            </td>
+
+                                            <td className="px-4 py-3 align-top">
+                                                <div className="text-sm text-gray-300">{item.correo || "—"}</div>
+                                                <div className="text-xs text-gray-500">{item.telefono || "—"}</div>
+                                            </td>
+
+                                            {activeTab === "empleados" && (
+                                                <td className="px-4 py-3 align-top">
+                                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-700 text-white mb-1">
+                                                        {item.cargo}
+                                                    </span>
+                                                    <div className="text-xs text-gray-400">{item.especialidad || "—"}</div>
+                                                </td>
+                                            )}
+
+                                            {activeTab === "clientes" && (
+                                                <td className="px-4 py-3 align-top">
+                                                    <div className="text-sm text-gray-300">{item.direccion || "—"}</div>
+                                                    <div className="text-xs text-gray-500">{item.ciudad || "—"}</div>
+                                                </td>
+                                            )}
+
+                                            <td className="px-4 py-3 align-top text-right">
+                                                <div className="inline-flex items-center gap-2">
+                                                    <button onClick={() => handleEdit(item)} className="text-sm px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 text-gray-200 transition">Editar</button>
+                                                    <button onClick={() => setItemToDelete(id)} className="text-sm px-2 py-1 rounded-md bg-red-600 hover:bg-red-700 text-white transition">Borrar</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+
+                                {currentItems.length === 0 && (
+                                    <tr>
+                                        <td colSpan="6" className="px-4 py-6 text-center text-gray-500">No se encontraron {activeTab}</td>
                                     </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                )}
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             {/* CONTROLES DE PAGINACIÓN */}
             {filteredData.length > itemsPerPage && (
-                <div className="flex flex-col sm:flex-row justify-between items-center mt-6 bg-gray-800 p-4 rounded-lg shadow border border-gray-700 gap-4">
+                <div className="flex flex-col sm:flex-row justify-between items-center mt-6 p-4 bg-[#0b0c0d]/60 border border-[#222] rounded-xl gap-4">
                     <button
                         onClick={() => paginate(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className={`px-4 py-2 rounded-lg font-medium transition-all w-full sm:w-auto ${
-                            currentPage === 1 ? "bg-gray-700 text-gray-500 cursor-not-allowed" : "bg-[#2f6fed] hover:bg-blue-600 text-white shadow hover:scale-105"
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all w-full sm:w-auto ${
+                            currentPage === 1 ? "bg-white/5 text-gray-600 cursor-not-allowed" : "bg-white/10 hover:bg-white/20 text-gray-200"
                         }`}
                     >
                         Anterior
@@ -335,8 +382,10 @@ export default function GestionCentralizada() {
                                 <button
                                     key={pageNumber}
                                     onClick={() => paginate(pageNumber)}
-                                    className={`px-3.5 py-1.5 rounded-lg font-medium transition-all ${
-                                        currentPage === pageNumber ? "bg-[#2f6fed] text-white shadow-md scale-105" : "bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white"
+                                    className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                                        currentPage === pageNumber 
+                                            ? "bg-orange-500 text-white shadow-md" 
+                                            : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
                                     }`}
                                 >
                                     {pageNumber}
@@ -348,8 +397,8 @@ export default function GestionCentralizada() {
                     <button
                         onClick={() => paginate(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className={`px-4 py-2 rounded-lg font-medium transition-all w-full sm:w-auto ${
-                            currentPage === totalPages ? "bg-gray-700 text-gray-500 cursor-not-allowed" : "bg-[#2f6fed] hover:bg-blue-600 text-white shadow hover:scale-105"
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all w-full sm:w-auto ${
+                            currentPage === totalPages ? "bg-white/5 text-gray-600 cursor-not-allowed" : "bg-white/10 hover:bg-white/20 text-gray-200"
                         }`}
                     >
                         Siguiente
@@ -357,87 +406,72 @@ export default function GestionCentralizada() {
                 </div>
             )}
 
-            {/* MODAL CREAR / EDITAR DINÁMICO */}
+            {/* Modal crear/editar: responsive */}
             {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-                    <div className="bg-[#191a1d] border border-gray-700 p-6 rounded-xl shadow-2xl w-full max-w-md text-gray-200 max-h-[90vh] overflow-y-auto">
-                        <h2 className="text-xl font-bold mb-4 text-center text-blue-400">
-                            {editingItem 
-                                ? `Editar ${activeTab === "clientes" ? "Cliente" : "Empleado"}` 
-                                : `Nuevo ${activeTab === "clientes" ? "Cliente" : "Empleado"}`
-                            }
-                        </h2>
-                        
-                        <form onSubmit={handleSubmit} className="space-y-3">
+                <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+                    <div className="absolute inset-0 bg-black/60" onClick={() => { setShowModal(false); setEditingItem(null); }} />
+                    <div className="relative w-full max-w-2xl bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-xl shadow-2xl border border-[#222] z-10 max-h-[90vh] overflow-y-auto">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold text-white">
+                                {editingItem ? `Editar ${activeTab === "clientes" ? "Cliente" : "Empleado"}` : `Nuevo ${activeTab === "clientes" ? "Cliente" : "Empleado"}`}
+                            </h3>
+                            <button onClick={() => { setShowModal(false); setEditingItem(null); }} className="text-gray-400 hover:text-white">Cerrar</button>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             {/* FORMULARIO PARA CLIENTES */}
                             {activeTab === "clientes" && (
-                                <>
-                                    <select
-                                        name="tipo_documento"
-                                        value={newCliente.tipo_documento}
-                                        onChange={handleClienteChange}
-                                        className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500"
-                                        required
-                                    >
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <select name="tipo_documento" value={newCliente.tipo_documento} onChange={handleClienteChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required>
                                         <option value="">Tipo de Documento...</option>
                                         <option value="CC">Cédula de Ciudadanía</option>
                                         <option value="NIT">NIT</option>
                                         <option value="TI">Tarjeta de Identidad</option>
                                         <option value="CE">Cédula de Extranjería</option>
                                     </select>
-                                    <input type="text" name="documento" placeholder="Número de Documento" value={newCliente.documento} onChange={handleClienteChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" required />
-                                    <div className="flex flex-col sm:flex-row gap-2">
-                                        <input type="text" name="nombres" placeholder="Nombres" value={newCliente.nombres} onChange={handleClienteChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" required />
-                                        <input type="text" name="apellidos" placeholder="Apellidos" value={newCliente.apellidos} onChange={handleClienteChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" required />
-                                    </div>
-                                    <input type="tel" name="telefono" placeholder="Teléfono" value={newCliente.telefono} onChange={handleClienteChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" />
-                                    <input type="email" name="correo" placeholder="Correo Electrónico" value={newCliente.correo} onChange={handleClienteChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" />
-                                    <input type="text" name="direccion" placeholder="Dirección" value={newCliente.direccion} onChange={handleClienteChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" />
-                                    <input type="text" name="ciudad" placeholder="Ciudad" value={newCliente.ciudad} onChange={handleClienteChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" />
-                                </>
+                                    <input type="text" name="documento" placeholder="Número de Documento" value={newCliente.documento} onChange={handleClienteChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
+                                    <input type="text" name="nombres" placeholder="Nombres" value={newCliente.nombres} onChange={handleClienteChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
+                                    <input type="text" name="apellidos" placeholder="Apellidos" value={newCliente.apellidos} onChange={handleClienteChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
+                                    <input type="tel" name="telefono" placeholder="Teléfono" value={newCliente.telefono} onChange={handleClienteChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
+                                    <input type="email" name="correo" placeholder="Correo Electrónico" value={newCliente.correo} onChange={handleClienteChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
+                                    <input type="text" name="direccion" placeholder="Dirección" value={newCliente.direccion} onChange={handleClienteChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
+                                    <input type="text" name="ciudad" placeholder="Ciudad" value={newCliente.ciudad} onChange={handleClienteChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
+                                </div>
                             )}
 
-                            {/* FORMULARIO PARA EMPLEADOS (Actualizado) */}
+                            {/* FORMULARIO PARA EMPLEADOS */}
                             {activeTab === "empleados" && (
-                                <>
-                                    <select
-                                        name="tipo_documento"
-                                        value={newEmpleado.tipo_documento}
-                                        onChange={handleEmpleadoChange}
-                                        className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500"
-                                        required
-                                    >
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <select name="tipo_documento" value={newEmpleado.tipo_documento} onChange={handleEmpleadoChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required>
                                         <option value="">Tipo de Documento...</option>
                                         <option value="CC">Cédula de Ciudadanía</option>
                                         <option value="NIT">NIT</option>
                                         <option value="TI">Tarjeta de Identidad</option>
                                         <option value="CE">Cédula de Extranjería</option>
                                     </select>
-                                    <input type="text" name="documento" placeholder="Número de Documento" value={newEmpleado.documento} onChange={handleEmpleadoChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" required />
-                                    <div className="flex flex-col sm:flex-row gap-2">
-                                        <input type="text" name="nombres" placeholder="Nombres" value={newEmpleado.nombres} onChange={handleEmpleadoChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" required />
-                                        <input type="text" name="apellidos" placeholder="Apellidos" value={newEmpleado.apellidos} onChange={handleEmpleadoChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" required />
-                                    </div>
-                                    <input type="text" name="especialidad" placeholder="Especialidad" value={newEmpleado.especialidad} onChange={handleEmpleadoChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" />
-                                    <input type="text" name="telefono" placeholder="Teléfono" value={newEmpleado.telefono} onChange={handleEmpleadoChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" />
-                                    <input type="email" name="correo" placeholder="Correo" value={newEmpleado.correo} onChange={handleEmpleadoChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" />
-                                    <input type="text" name="cargo" placeholder="Cargo" value={newEmpleado.cargo} onChange={handleEmpleadoChange} className="border border-gray-600 p-2 w-full rounded bg-gray-900 text-gray-200 focus:ring-2 focus:ring-blue-500" required />
-                                </>
+                                    <input type="text" name="documento" placeholder="Número de Documento" value={newEmpleado.documento} onChange={handleEmpleadoChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
+                                    <input type="text" name="nombres" placeholder="Nombres" value={newEmpleado.nombres} onChange={handleEmpleadoChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
+                                    <input type="text" name="apellidos" placeholder="Apellidos" value={newEmpleado.apellidos} onChange={handleEmpleadoChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
+                                    <input type="text" name="especialidad" placeholder="Especialidad" value={newEmpleado.especialidad} onChange={handleEmpleadoChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
+                                    <input type="text" name="telefono" placeholder="Teléfono" value={newEmpleado.telefono} onChange={handleEmpleadoChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
+                                    <input type="email" name="correo" placeholder="Correo" value={newEmpleado.correo} onChange={handleEmpleadoChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
+                                    <input type="text" name="cargo" placeholder="Cargo" value={newEmpleado.cargo} onChange={handleEmpleadoChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
+                                </div>
                             )}
 
-                            <div className="flex justify-end space-x-2 mt-4 pt-2">
+                            <div className="flex items-center justify-end gap-3 mt-6">
                                 <button
                                     type="button"
                                     onClick={() => { setShowModal(false); setEditingItem(null); }}
-                                    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-transform hover:scale-105"
+                                    className="px-4 py-2 rounded-md bg-white/5 text-gray-200 hover:bg-white/10 transition-colors"
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-transform hover:scale-105"
+                                    className="px-4 py-2 rounded-md bg-orange-500 hover:bg-orange-600 text-white shadow-sm transition-transform hover:scale-105"
                                 >
-                                    {editingItem ? "Actualizar" : "Guardar"}
+                                    {editingItem ? "Guardar cambios" : `Crear ${activeTab === "clientes" ? "Cliente" : "Empleado"}`}
                                 </button>
                             </div>
                         </form>
@@ -447,27 +481,28 @@ export default function GestionCentralizada() {
 
             {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN */}
             {itemToDelete !== null && (
-                <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-                    <div className="bg-gray-800 p-6 rounded-lg shadow-2xl w-full max-w-sm text-center border border-gray-700">
-                        <div className="text-red-500 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+                    <div className="absolute inset-0 bg-black/60" onClick={() => setItemToDelete(null)} />
+                    <div className="relative w-full max-w-sm bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-xl shadow-2xl border border-[#222] z-10 text-center">
+                        <div className="text-red-500 mb-4 flex justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                         </div>
-                        <h2 className="text-xl font-bold text-gray-200 mb-2">¿Eliminar Registro?</h2>
-                        <p className="text-gray-400 mb-6 text-sm md:text-base">
+                        <h3 className="text-lg font-bold text-white mb-2">¿Eliminar Registro?</h3>
+                        <p className="text-gray-400 mb-6 text-sm">
                             Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar este registro?
                         </p>
-                        <div className="flex justify-center space-x-4">
+                        <div className="flex items-center justify-center gap-3">
                             <button
                                 onClick={() => setItemToDelete(null)}
-                                className="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded transition-transform hover:scale-105 w-full sm:w-auto"
+                                className="px-4 py-2 rounded-md bg-white/5 text-gray-200 hover:bg-white/10 transition-colors w-full sm:w-auto"
                             >
                                 Cancelar
                             </button>
                             <button
                                 onClick={confirmDelete}
-                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition-transform hover:scale-105 w-full sm:w-auto"
+                                className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white transition-transform hover:scale-105 w-full sm:w-auto"
                             >
                                 Sí, eliminar
                             </button>

@@ -87,7 +87,7 @@ export default function Servicios() {
   };
 
   return (
-    <div className="p-6 bg-[#121316] min-h-screen text-white">
+    <div className="p-6 bg-[#0a0a0a] min-h-screen text-white">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Servicios</h1>
         <button

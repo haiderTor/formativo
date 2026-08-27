@@ -293,7 +293,7 @@ return (
             <div className="text-sm text-gray-400">Resueltos hoy</div>
             <div className="flex items-baseline justify-between">
             <div className="text-2xl font-bold text-white">{stats.resolvedToday}</div>
-            <div className="text-sm text-green-400">5a</div>
+            <div className="text-sm text-green-400">5</div>
             </div>
             <div className="text-xs text-gray-400 mt-1">Cerrados</div>
         </div>

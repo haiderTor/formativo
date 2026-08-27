@@ -1,13 +1,22 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 
 export default function Equipos() {
   const [equipos, setEquipos] = useState([]);
+  const [clientes, setClientes] = useState([]);
+  const [marcas, setMarcas] = useState([]);
+  
   const [search, setSearch] = useState("");
   const [sortOption, setSortOption] = useState("tipo_equipo");
   const [showModal, setShowModal] = useState(false);
   const [editingEquipo, setEditingEquipo] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   
+  // Estados para los selectores buscables
+  const [searchMarca, setSearchMarca] = useState("");
+  const [showMarcasDropdown, setShowMarcasDropdown] = useState(false);
+  const [searchCliente, setSearchCliente] = useState("");
+  const [showClientesDropdown, setShowClientesDropdown] = useState(false);
+
   const [newEquipo, setNewEquipo] = useState({
     tipo_equipo: "",
     modelo: "",
@@ -18,15 +27,32 @@ export default function Equipos() {
     cliente_id: ""
   });
 
-  // OBTENER DATOS
-  useEffect(() => {
+  // OBTENER DATOS (Equipos, Clientes y Marcas)
+  const fetchAllData = () => {
+    // Equipos
     fetch("http://localhost:3000/routes/equipo")
       .then((res) => res.json())
       .then((data) => setEquipos(data))
       .catch((err) => console.error(err));
+
+    // Clientes (usamos la ruta general para tener acceso al documento/cédula)
+    fetch("http://localhost:3000/routes/clientes")
+      .then((res) => res.json())
+      .then((data) => setClientes(data))
+      .catch((err) => console.error(err));
+
+    // Marcas (Asume que existe esta ruta en tu backend)
+    fetch("http://localhost:3000/routes/marca")
+      .then((res) => res.json())
+      .then((data) => setMarcas(data))
+      .catch((err) => console.error("Error cargando marcas:", err));
+  };
+
+  useEffect(() => {
+    fetchAllData();
   }, []);
 
-  // FILTRO Y ORDENAMIENTO
+  // FILTRO Y ORDENAMIENTO DE LA TABLA
   const filteredEquipos = useMemo(() => {
     let result = equipos.filter((equipo) =>
       Object.values(equipo).some((val) =>
@@ -43,6 +69,7 @@ export default function Equipos() {
     return result;
   }, [search, equipos, sortOption]);
 
+  // MANEJO DEL FORMULARIO
   const handleChange = (e) => {
     setNewEquipo({ ...newEquipo, [e.target.name]: e.target.value });
   };
@@ -50,11 +77,10 @@ export default function Equipos() {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Convertir a enteros para coincidir con la base de datos
     const payload = {
-        ...newEquipo,
-        marca_id: parseInt(newEquipo.marca_id) || null,
-        cliente_id: parseInt(newEquipo.cliente_id) || null
+      ...newEquipo,
+      marca_id: parseInt(newEquipo.marca_id) || null,
+      cliente_id: parseInt(newEquipo.cliente_id) || null
     };
     
     const url = editingEquipo
@@ -72,16 +98,8 @@ export default function Equipos() {
         if (!res.ok) throw new Error("Error al procesar la solicitud");
         return res.json();
       })
-      .then((saved) => {
-        if (editingEquipo) {
-          setEquipos(
-            equipos.map((eq) =>
-              eq.equipo_id === saved.equipo_id ? saved : eq
-            )
-          );
-        } else {
-          setEquipos([...equipos, saved]);
-        }
+      .then(() => {
+        fetchAllData(); // Refresca todo para traer los nombres actualizados
         closeModal();
       })
       .catch((err) => {
@@ -103,15 +121,31 @@ export default function Equipos() {
     }
   };
 
+  // ABRIR/CERRAR MODALES Y LIMPIAR ESTADOS
   const openEditModal = (equipo) => {
     setEditingEquipo(equipo);
-    setNewEquipo(equipo);
+    setNewEquipo({
+      tipo_equipo: equipo.tipo_equipo || "",
+      modelo: equipo.modelo || "",
+      referencia: equipo.referencia || "",
+      numero_serie: equipo.numero_serie || "",
+      observaciones: equipo.observaciones || "",
+      marca_id: equipo.marca_id || "",
+      cliente_id: equipo.cliente_id || ""
+    });
+    // Setear los inputs de búsqueda con los nombres actuales
+    setSearchMarca(equipo.nombre_marca || "");
+    const nombreCompleto = equipo.cliente_nombres ? `${equipo.cliente_nombres} ${equipo.cliente_apellidos || ''}` : "";
+    setSearchCliente(nombreCompleto);
+    
     setShowModal(true);
   };
 
   const closeModal = () => {
     setShowModal(false);
     setEditingEquipo(null);
+    setSearchMarca("");
+    setSearchCliente("");
     setNewEquipo({
       tipo_equipo: "",
       modelo: "",
@@ -122,6 +156,19 @@ export default function Equipos() {
       cliente_id: ""
     });
   };
+
+  // LÓGICA DE FILTRADO PARA DROPDOWNS
+  const filteredMarcas = marcas.filter(m => 
+    m.nombre?.toLowerCase().includes(searchMarca.toLowerCase())
+  );
+  
+  const filteredClientes = clientes.filter(c => {
+    const busqueda = searchCliente.toLowerCase();
+    const nombreCompleto = `${c.nombres} ${c.apellidos}`.toLowerCase();
+    const documento = String(c.documento || "").toLowerCase();
+    
+    return nombreCompleto.includes(busqueda) || documento.includes(busqueda);
+  });
 
   return (
     <div className="p-4 sm:p-6 bg-[#0f1113] min-h-screen text-gray-200">
@@ -160,16 +207,7 @@ export default function Equipos() {
           {/* Botón Nuevo */}
           <button
             onClick={() => {
-              setNewEquipo({
-                tipo_equipo: "",
-                modelo: "",
-                referencia: "",
-                numero_serie: "",
-                observaciones: "",
-                marca_id: "",
-                cliente_id: ""
-              });
-              setEditingEquipo(null);
+              closeModal(); // Asegura limpiar todo
               setShowModal(true);
             }}
             className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md shadow-sm text-sm font-semibold transition-transform hover:scale-105"
@@ -179,43 +217,40 @@ export default function Equipos() {
         </div>
       </div>
 
-      {/* Tabla / Lista: en mobile mostramos tarjetas, en md+ la tabla */}
+      {/* Tabla / Lista */}
       <div className="space-y-4">
         {/* Mobile list (cards) */}
         <ul className="md:hidden space-y-3">
-          {filteredEquipos.map((equipo) => {
-            return (
-              <li key={equipo.equipo_id} className="border border-[#222] p-3 rounded-xl bg-[#0b0c0d]/60">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-sm font-medium text-white">{equipo.tipo_equipo}</div>
-                    <div className="text-xs text-gray-400">ID: {equipo.equipo_id} | Marca ID: {equipo.marca_id}</div>
+          {filteredEquipos.map((equipo) => (
+            <li key={equipo.equipo_id} className="border border-[#222] p-3 rounded-xl bg-[#0b0c0d]/60">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="text-sm font-medium text-white">{equipo.tipo_equipo}</div>
+                  <div className="text-xs text-gray-400">
+                    ID: {equipo.equipo_id} | Marca: {equipo.nombre_marca || equipo.marca_id || "—"}
                   </div>
                 </div>
+              </div>
 
-                <div className="mt-3">
-                  <div className="text-sm text-gray-300">
-                    Mod: {equipo.modelo} | Ref: {equipo.referencia}
-                  </div>
-                  <div className="text-xs text-gray-400 mt-1">
-                    SN: <span className="font-mono text-gray-300">{equipo.numero_serie || "—"}</span>
-                  </div>
-                  <div className="text-xs text-gray-400 mt-1">Observaciones: {equipo.observaciones || "—"}</div>
-                  <div className="text-xs text-gray-500 mt-1">Cliente ID: {equipo.cliente_id || "—"}</div>
+              <div className="mt-3">
+                <div className="text-sm text-gray-300">
+                  Mod: {equipo.modelo} | Ref: {equipo.referencia}
                 </div>
+                <div className="text-xs text-gray-400 mt-1">
+                  SN: <span className="font-mono text-gray-300">{equipo.numero_serie || "—"}</span>
+                </div>
+                <div className="text-xs text-gray-400 mt-1">Observaciones: {equipo.observaciones || "—"}</div>
+                <div className="text-xs text-gray-500 mt-1">
+                  Cliente: {equipo.cliente_nombres ? `${equipo.cliente_nombres} ${equipo.cliente_apellidos || ''}` : (equipo.cliente_id || "—")}
+                </div>
+              </div>
 
-                <div className="flex items-center justify-end mt-3 gap-2">
-                  <button onClick={() => openEditModal(equipo)} className="text-xs px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 text-gray-200 transition">Editar</button>
-                  <button onClick={() => setItemToDelete(equipo.equipo_id)} className="text-xs px-2 py-1 rounded-md bg-red-600 hover:bg-red-700 text-white transition">Borrar</button>
-                </div>
-              </li>
-            );
-          })}
-          {filteredEquipos.length === 0 && (
-            <div className="p-6 text-center text-sm text-gray-500 bg-[#0b0c0d]/60 border border-[#222] rounded-xl">
-              No hay equipos registrados aún o no coinciden con la búsqueda.
-            </div>
-          )}
+              <div className="flex items-center justify-end mt-3 gap-2">
+                <button onClick={() => openEditModal(equipo)} className="text-xs px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 text-gray-200 transition">Editar</button>
+                <button onClick={() => setItemToDelete(equipo.equipo_id)} className="text-xs px-2 py-1 rounded-md bg-red-600 hover:bg-red-700 text-white transition">Borrar</button>
+              </div>
+            </li>
+          ))}
         </ul>
 
         {/* Desktop table */}
@@ -224,7 +259,6 @@ export default function Equipos() {
             <div className="text-sm text-gray-300 font-semibold">Equipos</div>
             <div className="text-xs text-gray-400">Mostrando {filteredEquipos.length} resultados</div>
           </div>
-
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-[#1f1f1f]">
               <thead className="bg-[#0f1113]">
@@ -232,60 +266,57 @@ export default function Equipos() {
                   <th className="px-4 py-3 text-left text-xs text-orange-400">ID / Tipo</th>
                   <th className="px-4 py-3 text-left text-xs text-gray-400">Modelo / Ref</th>
                   <th className="px-4 py-3 text-left text-xs text-gray-400">Número de Serie</th>
-                  <th className="px-4 py-3 text-left text-xs text-gray-400">IDs (Marca/Cliente)</th>
+                  <th className="px-4 py-3 text-left text-xs text-gray-400">Marca / Cliente</th>
                   <th className="px-4 py-3 text-left text-xs text-gray-400">Observaciones</th>
                   <th className="px-4 py-3 text-right text-xs text-gray-400">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1f1f1f]">
-                {filteredEquipos.map((equipo) => {
-                  return (
-                    <tr key={equipo.equipo_id} className="hover:bg-white/5 transition-colors">
-                      <td className="px-4 py-3 align-top">
-                        <div className="text-sm font-medium text-white">{equipo.tipo_equipo || "—"}</div>
-                        <div className="text-xs text-gray-500">ID: {equipo.equipo_id}</div>
-                      </td>
-                      <td className="px-4 py-3 align-top">
-                        <div className="text-sm text-gray-300">{equipo.modelo || "—"}</div>
-                        <div className="text-xs text-gray-500">Ref: {equipo.referencia || "—"}</div>
-                      </td>
-                      <td className="px-4 py-3 align-top">
-                        <div className="text-sm font-mono text-gray-400 bg-white/5 px-2 py-0.5 rounded inline-block">
-                          {equipo.numero_serie || "—"}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 align-top">
-                        <div className="text-sm text-gray-300">Marca: {equipo.marca_id || "—"}</div>
-                        <div className="text-xs text-gray-500">Cliente: {equipo.cliente_id || "—"}</div>
-                      </td>
-                      <td className="px-4 py-3 align-top">
-                        <div className="text-sm text-gray-300">{equipo.observaciones || "—"}</div>
-                      </td>
-                      <td className="px-4 py-3 align-top text-right">
-                        <div className="inline-flex items-center gap-2">
-                          <button onClick={() => openEditModal(equipo)} className="text-sm px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 text-gray-200 transition">Editar</button>
-                          <button onClick={() => setItemToDelete(equipo.equipo_id)} className="text-sm px-2 py-1 rounded-md bg-red-600 hover:bg-red-700 text-white transition">Borrar</button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-                {filteredEquipos.length === 0 && (
-                  <tr>
-                    <td colSpan="6" className="px-4 py-6 text-center text-gray-500">No se encontraron equipos</td>
+                {filteredEquipos.map((equipo) => (
+                  <tr key={equipo.equipo_id} className="hover:bg-white/5 transition-colors">
+                    <td className="px-4 py-3 align-top">
+                      <div className="text-sm font-medium text-white">{equipo.tipo_equipo || "—"}</div>
+                      <div className="text-xs text-gray-500">ID: {equipo.equipo_id}</div>
+                    </td>
+                    <td className="px-4 py-3 align-top">
+                      <div className="text-sm text-gray-300">{equipo.modelo || "—"}</div>
+                      <div className="text-xs text-gray-500">Ref: {equipo.referencia || "—"}</div>
+                    </td>
+                    <td className="px-4 py-3 align-top">
+                      <div className="text-sm font-mono text-gray-400 bg-white/5 px-2 py-0.5 rounded inline-block">
+                        {equipo.numero_serie || "—"}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 align-top">
+                      <div className="text-sm text-gray-300">
+                        Marca: <span className="font-semibold text-white">{equipo.nombre_marca || equipo.marca_id || "—"}</span>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Cliente: {equipo.cliente_nombres ? `${equipo.cliente_nombres} ${equipo.cliente_apellidos || ''}` : (equipo.cliente_id || "—")}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 align-top">
+                      <div className="text-sm text-gray-300">{equipo.observaciones || "—"}</div>
+                    </td>
+                    <td className="px-4 py-3 align-top text-right">
+                      <div className="inline-flex items-center gap-2">
+                        <button onClick={() => openEditModal(equipo)} className="text-sm px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 text-gray-200 transition">Editar</button>
+                        <button onClick={() => setItemToDelete(equipo.equipo_id)} className="text-sm px-2 py-1 rounded-md bg-red-600 hover:bg-red-700 text-white transition">Borrar</button>
+                      </div>
+                    </td>
                   </tr>
-                )}
+                ))}
               </tbody>
             </table>
           </div>
         </div>
       </div>
 
-      {/* Modal crear/editar: responsive */}
+      {/* Modal crear/editar */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/60" onClick={closeModal} />
-          <div className="relative w-full max-w-2xl bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-xl shadow-2xl border border-[#222] z-10 max-h-[90vh] overflow-y-auto">
+          <div className="relative w-full max-w-2xl bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-xl shadow-2xl border border-[#222] z-10 max-h-[90vh] overflow-y-visible">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">
                 {editingEquipo ? "Editar Equipo" : "Nuevo Equipo"}
@@ -320,28 +351,80 @@ export default function Equipos() {
                   />
                 </div>
                 
-                <div>
-                  <label className="block text-xs text-gray-400 mb-1">Marca ID</label>
+                {/* AUTOCOMPLETAR MARCA */}
+                <div className="relative">
+                  <label className="block text-xs text-gray-400 mb-1">Marca</label>
                   <input
-                    type="number"
-                    name="marca_id"
-                    placeholder="ID de la Marca"
-                    value={newEquipo.marca_id}
-                    onChange={handleChange}
+                    type="text"
+                    placeholder="Escribe la marca..."
+                    value={searchMarca}
+                    onChange={(e) => {
+                      setSearchMarca(e.target.value);
+                      setShowMarcasDropdown(true);
+                      setNewEquipo({ ...newEquipo, marca_id: "" }); // Resetea ID si cambia texto
+                    }}
+                    onFocus={() => setShowMarcasDropdown(true)}
+                    onBlur={() => setTimeout(() => setShowMarcasDropdown(false), 200)}
                     className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500"
+                    autoComplete="off"
                   />
+                  {showMarcasDropdown && filteredMarcas.length > 0 && (
+                    <ul className="absolute z-20 w-full bg-[#1a1c20] border border-[#333] mt-1 max-h-40 overflow-y-auto rounded-md shadow-2xl">
+                      {filteredMarcas.map(m => (
+                        <li
+                          key={m.marca_id}
+                          // onMouseDown dispara antes que onBlur, evitando bugs
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            setSearchMarca(m.nombre);
+                            setNewEquipo({ ...newEquipo, marca_id: m.marca_id });
+                            setShowMarcasDropdown(false);
+                          }}
+                          className="px-3 py-2 text-sm text-gray-300 hover:bg-orange-600 hover:text-white cursor-pointer"
+                        >
+                          {m.nombre}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
 
-                <div>
-                  <label className="block text-xs text-gray-400 mb-1">Propietario (Cliente ID)</label>
+                {/* AUTOCOMPLETAR CLIENTE */}
+                <div className="relative">
+                  <label className="block text-xs text-gray-400 mb-1">Propietario (Cédula o Nombre)</label>
                   <input
-                    type="number"
-                    name="cliente_id"
-                    placeholder="ID del Cliente"
-                    value={newEquipo.cliente_id}
-                    onChange={handleChange}
+                    type="text"
+                    placeholder="Ej: 10023... o Juan..."
+                    value={searchCliente}
+                    onChange={(e) => {
+                      setSearchCliente(e.target.value);
+                      setShowClientesDropdown(true);
+                      setNewEquipo({ ...newEquipo, cliente_id: "" });
+                    }}
+                    onFocus={() => setShowClientesDropdown(true)}
+                    onBlur={() => setTimeout(() => setShowClientesDropdown(false), 200)}
                     className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500"
+                    autoComplete="off"
                   />
+                  {showClientesDropdown && filteredClientes.length > 0 && (
+                    <ul className="absolute z-20 w-full bg-[#1a1c20] border border-[#333] mt-1 max-h-40 overflow-y-auto rounded-md shadow-2xl">
+                      {filteredClientes.map(c => (
+                        <li
+                          key={c.cliente_id}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            setSearchCliente(`${c.nombres} ${c.apellidos}`);
+                            setNewEquipo({ ...newEquipo, cliente_id: c.cliente_id });
+                            setShowClientesDropdown(false);
+                          }}
+                          className="px-3 py-2 text-sm text-gray-300 hover:bg-orange-600 hover:text-white cursor-pointer border-b border-[#222] last:border-0"
+                        >
+                          <div className="font-semibold text-white">{c.nombres} {c.apellidos}</div>
+                          <div className="text-xs text-gray-500">C.C: {c.documento || 'N/A'}</div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
 
                 <div>
@@ -381,7 +464,7 @@ export default function Equipos() {
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 mt-6">
+              <div className="flex items-center justify-end gap-3 mt-6 pt-2">
                 <button
                   type="button"
                   onClick={closeModal}
@@ -389,9 +472,11 @@ export default function Equipos() {
                 >
                   Cancelar
                 </button>
+                {/* Deshabilitamos el botón si no han seleccionado una marca y cliente válidos del listado */}
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-md bg-orange-500 hover:bg-orange-600 text-white shadow-sm transition-transform hover:scale-105"
+                  disabled={!newEquipo.marca_id || !newEquipo.cliente_id}
+                  className="px-4 py-2 rounded-md bg-orange-500 hover:bg-orange-600 text-white shadow-sm transition-transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed"
                 >
                   {editingEquipo ? "Guardar cambios" : "Crear equipo"}
                 </button>
@@ -401,33 +486,16 @@ export default function Equipos() {
         </div>
       )}
 
-      {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN */}
+      {/* Modal de eliminación se mantiene igual... */}
       {itemToDelete !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/60" onClick={() => setItemToDelete(null)} />
           <div className="relative w-full max-w-sm bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-xl shadow-2xl border border-[#222] z-10 text-center">
-            <div className="text-red-500 mb-4 flex justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            </div>
             <h3 className="text-lg font-bold text-white mb-2">¿Eliminar Equipo?</h3>
-            <p className="text-gray-400 mb-6 text-sm">
-              Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar este equipo?
-            </p>
+            <p className="text-gray-400 mb-6 text-sm">Esta acción no se puede deshacer.</p>
             <div className="flex items-center justify-center gap-3">
-              <button
-                onClick={() => setItemToDelete(null)}
-                className="px-4 py-2 rounded-md bg-white/5 text-gray-200 hover:bg-white/10 transition-colors w-full sm:w-auto"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white transition-transform hover:scale-105 w-full sm:w-auto"
-              >
-                Sí, eliminar
-              </button>
+              <button onClick={() => setItemToDelete(null)} className="px-4 py-2 rounded-md bg-white/5 text-gray-200 hover:bg-white/10 transition-colors w-full sm:w-auto">Cancelar</button>
+              <button onClick={confirmDelete} className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white transition-transform hover:scale-105 w-full sm:w-auto">Sí, eliminar</button>
             </div>
           </div>
         </div>

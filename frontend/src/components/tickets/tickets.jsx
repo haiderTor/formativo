@@ -272,35 +272,35 @@ export default function Tickets() {
                     <div className="text-xs text-gray-400 mt-1">En cola</div>
                 </div>
 
-                <div className="p-4 bg-[#121316]/60 backdrop-blur-sm rounded-xl border border-[#222]">
-                    <div className="text-sm text-gray-400">En progreso</div>
-                    <div className="flex items-baseline justify-between">
-                        <div className="text-2xl font-bold text-white">{stats.EnProgreso}</div>
-                        <div className="text-sm text-red-400">{stats.urgentes} urgentes</div>
-                    </div>
-                    <div className="text-xs text-gray-400 mt-1">Asignados</div>
-                </div>
-
-                <div className="p-4 bg-[#121316]/60 backdrop-blur-sm rounded-xl border border-[#222]">
-                    <div className="text-sm text-gray-400">Tiempo de respuesta</div>
-                    <div className="flex items-baseline justify-between">
-                        <div className="text-2xl font-bold text-white">
-                            {stats.avgResponseMin ? `${Math.floor(stats.avgResponseMin / 60)}h ${stats.avgResponseMin % 60}m` : "—"}
-                        </div>
-                        <div className="text-sm text-green-400">↓12 min vs ayer</div>
-                    </div>
-                    <div className="text-xs text-gray-400 mt-1">Promedio</div>
-                </div>
-
-                <div className="p-4 bg-[#121316]/60 backdrop-blur-sm rounded-xl border border-[#222]">
-                    <div className="text-sm text-gray-400">Resueltos hoy</div>
-                    <div className="flex items-baseline justify-between">
-                        <div className="text-2xl font-bold text-white">{stats.resolvedToday}</div>
-                        <div className="text-sm text-green-400">↑4 vs ayer</div>
-                    </div>
-                    <div className="text-xs text-gray-400 mt-1">Cerrados</div>
-                </div>
+        <div className="p-4 bg-[#121316]/60 backdrop-blur-sm rounded-xl border border-[#222]">
+            <div className="text-sm text-gray-400">En progreso</div>
+            <div className="flex items-baseline justify-between">
+            <div className="text-2xl font-bold text-white">{stats.EnProgreso}</div>
+            <div className="text-sm text-red-400">{stats.urgentes} urgentes</div>
             </div>
+            <div className="text-xs text-gray-400 mt-1">Asignados</div>
+        </div>
+
+        <div className="p-4 bg-[#121316]/60 backdrop-blur-sm rounded-xl border border-[#222]">
+            <div className="text-sm text-gray-400">Tiempo de respuesta</div>
+            <div className="flex items-baseline justify-between">
+            <div className="text-2xl font-bold text-white">
+                {stats.avgResponseMin ? `${Math.floor(stats.avgResponseMin / 60)}h ${stats.avgResponseMin % 60}m` : "—"}
+            </div>
+            <div className="text-sm text-green-400">↓12 min vs ayer</div>
+            </div>
+            <div className="text-xs text-gray-400 mt-1">Promedio</div>
+        </div>
+
+        <div className="p-4 bg-[#121316]/60 backdrop-blur-sm rounded-xl border border-[#222]">
+            <div className="text-sm text-gray-400">Resueltos hoy</div>
+            <div className="flex items-baseline justify-between">
+            <div className="text-2xl font-bold text-white">{stats.resolvedToday}</div>
+            <div className="text-sm text-green-400">↑4 vs ayer</div>
+            </div>
+            <div className="text-xs text-gray-400 mt-1">Cerrados</div>
+        </div>
+        </div>
 
             {/* Tabla principal: en mobile mostramos tarjetas, en md+ la tabla */}
             <div className="space-y-4">

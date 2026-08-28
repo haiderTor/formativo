@@ -5,7 +5,6 @@ import { NavLink, Outlet } from "react-router-dom";
 export default function Navegacion() {
     // Estados para controlar los componentes interactivos
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [isReportesOpen, setIsReportesOpen] = useState(false);
     const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
 
     // Funciones auxiliares para manejar las clases activas en los NavLinks

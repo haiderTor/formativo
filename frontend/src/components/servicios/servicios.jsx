@@ -258,7 +258,7 @@ export default function Servicios() {
               <h3 className="text-lg font-semibold text-white">
                 {editingServicio ? "Editar Servicio" : "Nuevo Servicio"}
               </h3>
-              <button onClick={closeModal} className="text-gray-400 hover:text-white">Cerrar</button>
+              <button onClick={closeModal} className="text-gray-400 hover:text-white">X</button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">

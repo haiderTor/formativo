@@ -321,7 +321,7 @@ export default function Equipos() {
               <h3 className="text-lg font-semibold text-white">
                 {editingEquipo ? "Editar Equipo" : "Nuevo Equipo"}
               </h3>
-              <button onClick={closeModal} className="text-gray-400 hover:text-white">Cerrar</button>
+              <button onClick={closeModal} className="text-gray-400 hover:text-white">X</button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">

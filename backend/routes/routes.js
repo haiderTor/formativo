@@ -176,10 +176,13 @@ app.get('/routes/clientes', async (req, res) => {
 app.post('/routes/clientes', async (req, res) => {
     const { tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad } = req.body;
 
+    // Si apellidos viene como undefined o string vacío, guardamos null
+    const apellidosValue = apellidos && apellidos.trim() !== '' ? apellidos : null;
+
     try {
         const query = await pool.query(
             'INSERT INTO clientes(tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', 
-            [tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad]
+            [tipo_documento, documento, nombres, apellidosValue, telefono, correo, direccion, ciudad]
         );
         res.status(201).json(query.rows[0]);
         console.log('Cliente registrado correctamente:', query.rows[0]);
@@ -193,6 +196,10 @@ app.post('/routes/clientes', async (req, res) => {
 app.put('/routes/clientes/:id', async (req, res) => {
     const { id } = req.params;
     const { tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad } = req.body;
+
+    // Si apellidos viene como undefined o string vacío, guardamos null
+    const apellidosValue = apellidos && apellidos.trim() !== '' ? apellidos : null;
+
     try {
         const result = await pool.query(
             `UPDATE clientes SET 
@@ -205,8 +212,13 @@ app.put('/routes/clientes/:id', async (req, res) => {
                 direccion=$7, 
                 ciudad=$8
                WHERE cliente_id=$9 RETURNING *`,
-            [tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad, id]
+            [tipo_documento, documento, nombres, apellidosValue, telefono, correo, direccion, ciudad, id]
         );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Cliente no encontrado' });
+        }
+
         res.json(result.rows[0]);
     } catch (error) {
         console.error('Error updating cliente:', error);

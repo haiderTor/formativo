@@ -415,7 +415,7 @@ export default function GestionCentralizada() {
                             <h3 className="text-lg font-semibold text-white">
                                 {editingItem ? `Editar ${activeTab === "clientes" ? "Cliente" : "Empleado"}` : `Nuevo ${activeTab === "clientes" ? "Cliente" : "Empleado"}`}
                             </h3>
-                            <button onClick={() => { setShowModal(false); setEditingItem(null); }} className="text-gray-400 hover:text-white">Cerrar</button>
+                            <button onClick={() => { setShowModal(false); setEditingItem(null); }} className="text-gray-400 hover:text-white">X</button>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
@@ -446,7 +446,7 @@ export default function GestionCentralizada() {
 
                                     <div>
                                         <label className="block text-xs text-gray-400 mb-1">Apellidos</label>
-                                        <input type="text" name="apellidos" placeholder="Ej: Perez Lopez" value={newCliente.apellidos} onChange={handleClienteChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
+                                        <input type="text" name="apellidos" placeholder="Ej: Perez Lopez" value={newCliente.apellidos} onChange={handleClienteChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500"  />
                                     </div>
 
                                     <div>

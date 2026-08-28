@@ -21,105 +21,98 @@ export default function Navegacion() {
 
     return (
         <div className="min-h-screen relative bg-[#000000]">
-        {/* Capas globales de fondo para glassmorphism */}
-        <div className="bg-complex bg-noise" aria-hidden="true" />
-        <div className="bg-blur-layer" aria-hidden="true" />
-        <div className="bg-spot" aria-hidden="true" />
-
         {/* Contenedor z-10 para que el layout quede encima de las capas */}
-        <div className="relative z-10">
+        <div className="relative">
             {/* --- BARRA SUPERIOR (NAVBAR) --- */}
-            <nav className="fixed top-0 z-50 w-full glass glass--accent">
-            <div className="px-3 py-3 lg:px-5 lg:pl-3">
+            <nav className="fixed top-0 z-50 w-full bg-[#000000]">
+              <div className="px-3 py-3 lg:px-5 lg:pl-3">
                 <div className="flex items-center justify-between">
-                {/* Logo y Botón de Menú Móvil */}
-                <div className="flex items-center justify-start rtl:justify-end">
-                    <button
-                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    type="button"
-                    className="sm:hidden text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base text-sm p-2 focus:outline-none"
-                    >
-                    <span className="sr-only">Open sidebar</span>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                        className="w-6 h-6"
-                    >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                    </svg>
+                  
+                  {/* Logo inline */}
+                  <div className="flex items-center">
+                    <a href="#" className="flex items-center">
+                      <img 
+                        src="/Logo-orange-solid.png" 
+                        className="inline-block h-8 w-auto align-middle me-2" 
+                        alt="Centraly" 
+                      />
+                      <span className="inline-block align-middle text-lg md:text-xl font-semibold text-white">
+                        Centraly
+                      </span>
+                    </a>
+                  </div>
+
+                  {/* Componentes lado derecho */}
+                  <div className="flex items-center space-x-4">
+                    
+                    {/* Buscador */}
+                    <div className="hidden md:block">
+                      <input
+                        type="text"
+                        placeholder="Buscar..."
+                        className="px-3 py-1 rounded-md bg-[#121316] text-white text-sm focus:outline-none focus:ring-2 focus:ring-neutral-tertiary"
+                      />
+                    </div>
+
+                    {/* Notificaciones */}
+                    <button className="relative text-white hover:text-[#FFBF00]">
+                      <svg xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 24 24" fill="currentColor" 
+                        className="w-6 h-6">
+                        <path d="M12 2a9 9 0 0 0-9 9v4.5l-1.5 1.5v1h21v-1l-1.5-1.5V11a9 9 0 0 0-9-9zm0 20a3 3 0 0 0 3-3H9a3 3 0 0 0 3 3z"/>
+                      </svg>
+                      <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
                     </button>
 
-                    <a href="#" className="flex ms-2 md:me-24">
-                    <img src="/Logo-orange-solid.png" className="h-6 me-3" alt="Centraly" />
-                    <span className="self-center text-lg font-semibold whitespace-nowrap text-white">Centraly</span>
-                    </a>
-                </div>
+                    {/* Acceso rápido (ejemplo: ayuda) */}
+                    <button className="text-white hover:text-[#FFBF00]">
+                      <svg xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 24 24" fill="currentColor" 
+                        className="w-6 h-6">
+                        <path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm.25 15h-1.5v-1.5h1.5zm1.75-6.5a2.25 2.25 0 0 1-1.5 2.122V13h-1.5v-1.5a.75.75 0 0 1 .75-.75 1.5 1.5 0 1 0-1.5-1.5H9a3 3 0 1 1 6 0z"/>
+                      </svg>
+                    </button>
 
-                {/* Menú de Usuario / Perfil */}
-                <div className="flex items-center">
+                    {/* Perfil de usuario */}
                     <div className="flex items-center ms-3 relative">
-                    <div>
+                      <div>
                         <button
-                        onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                        type="button"
-                        className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                          onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                          type="button"
+                          className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                         >
-                        <span className="sr-only">Open user menu</span>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="w-6 h-6"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                        </svg>
+                          <span className="sr-only">Open user menu</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" 
+                            viewBox="0 0 24 24" fill="currentColor" 
+                            className="w-6 h-6 text-white">
+                            <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z"/>
+                          </svg>
                         </button>
-                    </div>
+                      </div>
 
-                    {/* Opciones de la cuenta (Dropdown) */}
-                    <div
+                      {/* Dropdown de usuario */}
+                      <div
                         className={`z-50 absolute right-0 top-9 bg-[#121316] border border-default-medium rounded-base shadow-lg w-44 transition-all ${
-                        isUserDropdownOpen ? "block" : "hidden"
+                          isUserDropdownOpen ? "block" : "hidden"
                         }`}
-                    >
+                      >
                         <div className="px-4 py-3 border-b border-default-medium">
-                        <p className="text-sm font-medium text-heading text-white">Neil Sims</p>
-                        <p className="text-sm text-body truncate text-gray-400">neil.sims@flowbite.com</p>
+                          <p className="text-sm font-medium text-heading text-white">Neil Sims</p>
+                          <p className="text-sm text-body truncate text-gray-400">neil.sims@flowbite.com</p>
                         </div>
-
                         <ul className="p-2 text-sm text-body font-medium">
-                        <li>
-                            <a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading text-white rounded">
-                            Dashboard
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading text-white rounded">
-                            Settings
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading text-white rounded">
-                            Earnings
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading text-white rounded">
-                            Sign out
-                            </a>
-                        </li>
+                          <li><a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading text-white rounded">Dashboard</a></li>
+                          <li><a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading text-white rounded">Settings</a></li>
+                          <li><a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading text-white rounded">Earnings</a></li>
+                          <li><a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading text-white rounded">Sign out</a></li>
                         </ul>
+                      </div>
                     </div>
-                    </div>
+                  </div>
                 </div>
-                </div>
-            </div>
+              </div>
             </nav>
+
             {/* --- BARRA LATERAL (SIDEBAR) --- */}
             <aside
             className={`fixed top-0 left-0 z-40 w-45 h-screen pt-14 transition-transform sm:translate-x-0 ${

@@ -14,7 +14,7 @@ export default function Servicios() {
     precio_base: "",
     observaciones: "",
   });
-  // 
+  // Fetch de servicios desde el backend al cargar el componente
   useEffect(() => {
     fetch("http://localhost:3000/routes/servicios")
       .then((res) => res.json())

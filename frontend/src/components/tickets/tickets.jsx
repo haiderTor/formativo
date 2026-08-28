@@ -269,7 +269,7 @@ export default function Tickets() {
                     <div className="text-sm text-gray-400">Tickets abiertos</div>
                     <div className="flex items-baseline justify-between">
                         <div className="text-2xl font-bold text-white">{stats.abiertos}</div>
-                        <div className="text-sm text-green-400">+3 hoy</div>
+                        <div className="text-sm text-green-400">20</div>
                     </div>
                     <div className="text-xs text-gray-400 mt-1">En cola</div>
                 </div>
@@ -278,18 +278,18 @@ export default function Tickets() {
             <div className="text-sm text-gray-400">En progreso</div>
             <div className="flex items-baseline justify-between">
             <div className="text-2xl font-bold text-white">{stats.EnProgreso}</div>
-            <div className="text-sm text-red-400">{stats.urgentes} urgentes</div>
+            <div className="text-sm text-green-400">{stats.urgentes} urgentes</div>
             </div>
             <div className="text-xs text-gray-400 mt-1">Asignados</div>
         </div>
 
         <div className="p-4 bg-[#121316]/60 backdrop-blur-sm rounded-xl border border-[#222]">
-            <div className="text-sm text-gray-400">Tiempo de respuesta</div>
+            <div className="text-sm text-gray-400">Pendientes</div>
             <div className="flex items-baseline justify-between">
             <div className="text-2xl font-bold text-white">
                 {stats.avgResponseMin ? `${Math.floor(stats.avgResponseMin / 60)}h ${stats.avgResponseMin % 60}m` : "—"}
             </div>
-            <div className="text-sm text-green-400">↓12 min vs ayer</div>
+            <div className="text-sm text-green-400">12</div>
             </div>
             <div className="text-xs text-gray-400 mt-1">Promedio</div>
         </div>
@@ -298,7 +298,7 @@ export default function Tickets() {
             <div className="text-sm text-gray-400">Resueltos hoy</div>
             <div className="flex items-baseline justify-between">
             <div className="text-2xl font-bold text-white">{stats.resolvedToday}</div>
-            <div className="text-sm text-green-400">↑4 vs ayer</div>
+            <div className="text-sm text-green-400">5</div>
             </div>
             <div className="text-xs text-gray-400 mt-1">Cerrados</div>
         </div>

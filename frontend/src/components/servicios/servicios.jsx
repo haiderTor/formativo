@@ -93,6 +93,12 @@ export default function Servicios() {
   const closeModal = () => {
     setShowModal(false);
     setEditingServicio(null);
+    setNewServicio({
+      nombre: "",
+      descripcion: "",
+      precio_base: "",
+      observaciones: "",
+    });
   };
 
   return (
@@ -255,44 +261,56 @@ export default function Servicios() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Nombre del Servicio</label>
+                  <input
+                    type="text"
+                    name="nombre"
+                    placeholder="Ej: Mantenimiento Preventivo"
+                    value={newServicio.nombre}
+                    onChange={handleChange}
+                    className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Precio Base</label>
+                  <input
+                    type="number"
+                    name="precio_base"
+                    placeholder="Ej: 50000"
+                    value={newServicio.precio_base}
+                    onChange={handleChange}
+                    className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Descripción</label>
                 <input
                   type="text"
-                  name="nombre"
-                  placeholder="Nombre del servicio"
-                  value={newServicio.nombre}
+                  name="descripcion"
+                  placeholder="Descripción detallada del servicio..."
+                  value={newServicio.descripcion}
                   onChange={handleChange}
-                  className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500"
-                  required
-                />
-                <input
-                  type="number"
-                  name="precio_base"
-                  placeholder="Precio Base"
-                  value={newServicio.precio_base}
-                  onChange={handleChange}
-                  className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500"
-                  required
+                  className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
-              <input
-                type="text"
-                name="descripcion"
-                placeholder="Descripción"
-                value={newServicio.descripcion}
-                onChange={handleChange}
-                className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500"
-              />
-
-              <input
-                type="text"
-                name="observaciones"
-                placeholder="Observaciones"
-                value={newServicio.observaciones}
-                onChange={handleChange}
-                className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500"
-              />
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Observaciones</label>
+                <input
+                  type="text"
+                  name="observaciones"
+                  placeholder="Notas adicionales..."
+                  value={newServicio.observaciones}
+                  onChange={handleChange}
+                  className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500"
+                />
+              </div>
 
               <div className="flex items-center justify-end gap-3 mt-6">
                 <button

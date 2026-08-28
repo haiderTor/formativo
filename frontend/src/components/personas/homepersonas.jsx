@@ -419,43 +419,106 @@ export default function GestionCentralizada() {
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
+                            
                             {/* FORMULARIO PARA CLIENTES */}
                             {activeTab === "clientes" && (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <select name="tipo_documento" value={newCliente.tipo_documento} onChange={handleClienteChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required>
-                                        <option value="">Tipo de Documento...</option>
-                                        <option value="CC">Cédula de Ciudadanía</option>
-                                        <option value="NIT">NIT</option>
-                                        <option value="TI">Tarjeta de Identidad</option>
-                                        <option value="CE">Cédula de Extranjería</option>
-                                    </select>
-                                    <input type="text" name="documento" placeholder="Número de Documento" value={newCliente.documento} onChange={handleClienteChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
-                                    <input type="text" name="nombres" placeholder="Nombres" value={newCliente.nombres} onChange={handleClienteChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
-                                    <input type="text" name="apellidos" placeholder="Apellidos" value={newCliente.apellidos} onChange={handleClienteChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
-                                    <input type="tel" name="telefono" placeholder="Teléfono" value={newCliente.telefono} onChange={handleClienteChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
-                                    <input type="email" name="correo" placeholder="Correo Electrónico" value={newCliente.correo} onChange={handleClienteChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
-                                    <input type="text" name="direccion" placeholder="Dirección" value={newCliente.direccion} onChange={handleClienteChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
-                                    <input type="text" name="ciudad" placeholder="Ciudad" value={newCliente.ciudad} onChange={handleClienteChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">Tipo de Documento</label>
+                                        <select name="tipo_documento" value={newCliente.tipo_documento} onChange={handleClienteChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required>
+                                            <option value="">Seleccione...</option>
+                                            <option value="CC">Cédula de Ciudadanía</option>
+                                            <option value="NIT">NIT</option>
+                                            <option value="TI">Tarjeta de Identidad</option>
+                                            <option value="CE">Cédula de Extranjería</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">Número de Documento</label>
+                                        <input type="text" name="documento" placeholder="Ej: 1002345678" value={newCliente.documento} onChange={handleClienteChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">Nombres</label>
+                                        <input type="text" name="nombres" placeholder="Ej: Juan Diego" value={newCliente.nombres} onChange={handleClienteChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">Apellidos</label>
+                                        <input type="text" name="apellidos" placeholder="Ej: Perez Lopez" value={newCliente.apellidos} onChange={handleClienteChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">Teléfono</label>
+                                        <input type="tel" name="telefono" placeholder="Ej: 3001234567" value={newCliente.telefono} onChange={handleClienteChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">Correo Electrónico</label>
+                                        <input type="email" name="correo" placeholder="Ej: correo@ejemplo.com" value={newCliente.correo} onChange={handleClienteChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">Dirección</label>
+                                        <input type="text" name="direccion" placeholder="Ej: Calle 123 # 45-67" value={newCliente.direccion} onChange={handleClienteChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">Ciudad</label>
+                                        <input type="text" name="ciudad" placeholder="Ej: Bogotá" value={newCliente.ciudad} onChange={handleClienteChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
+                                    </div>
                                 </div>
                             )}
 
                             {/* FORMULARIO PARA EMPLEADOS */}
                             {activeTab === "empleados" && (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <select name="tipo_documento" value={newEmpleado.tipo_documento} onChange={handleEmpleadoChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required>
-                                        <option value="">Tipo de Documento...</option>
-                                        <option value="CC">Cédula de Ciudadanía</option>
-                                        <option value="NIT">NIT</option>
-                                        <option value="TI">Tarjeta de Identidad</option>
-                                        <option value="CE">Cédula de Extranjería</option>
-                                    </select>
-                                    <input type="text" name="documento" placeholder="Número de Documento" value={newEmpleado.documento} onChange={handleEmpleadoChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
-                                    <input type="text" name="nombres" placeholder="Nombres" value={newEmpleado.nombres} onChange={handleEmpleadoChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
-                                    <input type="text" name="apellidos" placeholder="Apellidos" value={newEmpleado.apellidos} onChange={handleEmpleadoChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
-                                    <input type="text" name="especialidad" placeholder="Especialidad" value={newEmpleado.especialidad} onChange={handleEmpleadoChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
-                                    <input type="text" name="telefono" placeholder="Teléfono" value={newEmpleado.telefono} onChange={handleEmpleadoChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
-                                    <input type="email" name="correo" placeholder="Correo" value={newEmpleado.correo} onChange={handleEmpleadoChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
-                                    <input type="text" name="cargo" placeholder="Cargo" value={newEmpleado.cargo} onChange={handleEmpleadoChange} className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">Tipo de Documento</label>
+                                        <select name="tipo_documento" value={newEmpleado.tipo_documento} onChange={handleEmpleadoChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required>
+                                            <option value="">Seleccione...</option>
+                                            <option value="CC">Cédula de Ciudadanía</option>
+                                            <option value="NIT">NIT</option>
+                                            <option value="TI">Tarjeta de Identidad</option>
+                                            <option value="CE">Cédula de Extranjería</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">Número de Documento</label>
+                                        <input type="text" name="documento" placeholder="Ej: 1002345678" value={newEmpleado.documento} onChange={handleEmpleadoChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">Nombres</label>
+                                        <input type="text" name="nombres" placeholder="Ej: Ana Maria" value={newEmpleado.nombres} onChange={handleEmpleadoChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">Apellidos</label>
+                                        <input type="text" name="apellidos" placeholder="Ej: Gomez Ramirez" value={newEmpleado.apellidos} onChange={handleEmpleadoChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">Especialidad</label>
+                                        <input type="text" name="especialidad" placeholder="Ej: Técnico en Hardware" value={newEmpleado.especialidad} onChange={handleEmpleadoChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">Teléfono</label>
+                                        <input type="text" name="telefono" placeholder="Ej: 3001234567" value={newEmpleado.telefono} onChange={handleEmpleadoChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">Correo Electrónico</label>
+                                        <input type="email" name="correo" placeholder="Ej: correo@ejemplo.com" value={newEmpleado.correo} onChange={handleEmpleadoChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">Cargo</label>
+                                        <input type="text" name="cargo" placeholder="Ej: Administrador, Soporte" value={newEmpleado.cargo} onChange={handleEmpleadoChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
+                                    </div>
                                 </div>
                             )}
 

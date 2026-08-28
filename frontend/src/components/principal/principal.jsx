@@ -97,14 +97,30 @@ export default function Navegacion() {
                         }`}
                       >
                         <div className="px-4 py-3 border-b border-default-medium">
-                          <p className="text-sm font-medium text-heading text-white">Neil Sims</p>
-                          <p className="text-sm text-body truncate text-gray-400">neil.sims@flowbite.com</p>
+                        <p className="text-sm font-medium text-heading text-white">Neil Sims</p>
+                        <p className="text-sm text-body truncate text-gray-400">neil.sims@flowbite.com</p>
                         </div>
                         <ul className="p-2 text-sm text-body font-medium">
-                          <li><a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading text-white rounded">Dashboard</a></li>
-                          <li><a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading text-white rounded">Settings</a></li>
-                          <li><a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading text-white rounded">Earnings</a></li>
-                          <li><a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading text-white rounded">Sign out</a></li>
+                        <li>
+                            <a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading text-white rounded">
+                            Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading text-white rounded">
+                            Settings
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading text-white rounded">
+                            Earnings
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading text-white rounded">
+                            Sign out
+                            </a>
+                        </li>
                         </ul>
                       </div>
                     </div>
@@ -120,7 +136,8 @@ export default function Navegacion() {
             }`}
             aria-label="Sidebar"
             >
-            <div className="h-full px-3 py-4 overflow-y-auto glass glass--spot" style={{ '--spot-x': '12%', '--spot-y': '20%', '--spot-tx': '-8px', background: 'transparent' }}>
+            {/* AÑADIDO: flex flex-col justify-between para empujar ajustes al fondo */}
+            <div className="h-full px-3 py-4 overflow-y-auto glass glass--spot flex flex-col justify-between" style={{ '--spot-x': '12%', '--spot-y': '20%', '--spot-tx': '-8px', background: 'transparent' }}>
                 <ul className="space-y-2 font-medium">
                 {/* Servicios */}
                 <li>
@@ -175,9 +192,6 @@ export default function Navegacion() {
                     </NavLink>
                 </li>
 
-                {/* Reportes */}
-                
-
                 {/* Tickets */}
                 <li>
                     <NavLink
@@ -195,6 +209,21 @@ export default function Navegacion() {
                     </NavLink>
                 </li>
                 </ul>
+
+                {/* --- BOTÓN DE AJUSTES EN LA PARTE INFERIOR --- */}
+                <div className="pt-4 mt-4 border-t border-gray-700/50">
+                    <button
+                        type="button"
+                        onClick={(e) => e.preventDefault()}
+                        className="flex items-center w-full px-2 py-1.5 rounded-md hover:bg-linear-to-r hover:from-gray-900/50 hover:to-orange-700/50 hover:opacity-90 transition text-gray-300 backdrop-blur-sm"
+                    >
+                        <svg className="w-5 h-5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13v-2a1 1 0 0 0-1-1h-.757l-.707-1.707.535-.536a1 1 0 0 0 0-1.414l-1.414-1.414a1 1 0 0 0-1.414 0l-.536.535L14 4.757V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v.757l-1.707.707-.536-.535a1 1 0 0 0-1.414 0L4.929 6.343a1 1 0 0 0 0 1.414l.536.536-.707 1.707H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.757l.707 1.707-.535.536a1 1 0 0 0 0 1.414l1.414 1.414a1 1 0 0 0 1.414 0l.536-.535 1.707.707V20a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.757l1.707-.707.536.535a1 1 0 0 0 1.414 0l1.414-1.414a1 1 0 0 0 0-1.414l-.535-.536.707-1.707H20a1 1 0 0 0 1-1Z" />
+                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                        </svg>
+                        <span className="ms-3 font-[Manrope]">Ajustes</span>
+                    </button>
+                </div>
             </div> {/* cierre del div.h-full (glass) */}
             </aside>
             {/* --- CONTENEDOR PRINCIPAL (Outlet) --- */}
@@ -216,9 +245,8 @@ export default function Navegacion() {
         </div> /* cierre del wrapper min-h-screen relative */
     );
     }
+
     // principal.jsx — TRAMO 4/4 (fallback detection para navegadores sin backdrop-filter)
-    // Pega este snippet en tu main.jsx justo antes de renderizar la app (o al final de principal.jsx
-    // si prefieres), para añadir la clase `no-backdrop` al <html> cuando no haya soporte.
     if (typeof window !== 'undefined' && window.CSS) {
     const supportsBackdrop =
         CSS.supports('backdrop-filter', 'blur(1px)') ||

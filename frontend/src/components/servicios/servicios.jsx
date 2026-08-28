@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-
+// Variables de estado para manejar los servicios, búsqueda, ordenamiento, modales y formularios
 export default function Servicios() {
   const [servicios, setServicios] = useState([]);
   const [search, setSearch] = useState("");
@@ -7,13 +7,14 @@ export default function Servicios() {
   const [showModal, setShowModal] = useState(false);
   const [editingServicio, setEditingServicio] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
+  // Estado para el formulario de creación/edición de servicios
   const [newServicio, setNewServicio] = useState({
     nombre: "",
     descripcion: "",
     precio_base: "",
     observaciones: "",
   });
-
+  // 
   useEffect(() => {
     fetch("http://localhost:3000/routes/servicios")
       .then((res) => res.json())

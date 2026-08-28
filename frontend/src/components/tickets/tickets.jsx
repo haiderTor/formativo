@@ -1,12 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
 
 export default function Tickets() {
+    //Declaración de estados (Variables de ReactState)
     const [tickets, setTickets] = useState([]);
     const [search, setSearch] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [editingTicket, setEditingTicket] = useState(null);
     const [itemToDelete, setItemToDelete] = useState(null);
     const [activeFilter, setActiveFilter] = useState("All"); // All, Open, In Progress, Pending, Resolved
+    //Estado para el formulario de creación/edición de tickets
     const [newTicket, setNewTicket] = useState({
         ticket_id: null,
         fecha_creacion: "",
@@ -22,7 +24,7 @@ export default function Tickets() {
         updated_at: "",
         tiempo_respuesta_min: null,
     });
-
+    //Fetch de tickets desde el backend al cargar el componente
     useEffect(() => {
         fetch("http://localhost:3000/routes/tickets")
             .then((res) => res.json())
@@ -214,7 +216,7 @@ export default function Tickets() {
 
     return (
         <div className="p-4 sm:p-6 bg-[#0f1113] min-h-screen text-gray-200">
-            {/* Header: título + acciones */}
+            {/* Header: título + acciones */} 
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
                 <div>
                     <h1 className="text-xl sm:text-2xl font-bold text-white">Tickets</h1>

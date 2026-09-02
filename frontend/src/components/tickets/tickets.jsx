@@ -18,7 +18,7 @@ export default function Tickets() {
         observaciones: "",
         equipo_id: "",
         empleado_id: "",
-        prioridad: "Medium",
+        prioridad: "",
         cliente_nombre: "",
         cliente_email: "",
         updated_at: "",

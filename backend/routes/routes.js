@@ -3,15 +3,18 @@ import pg from 'pg';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
+// cargar las variables de entorno como contraseñas y puertos
 dotenv.config();
 
 const { Pool } = pg;
 const app = express();
 
+// configurar el servidor para que acepte peticiones de otros lados y entienda json
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// conectar la base de datos de postgres 
 const pool = new Pool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -21,85 +24,10 @@ const pool = new Pool({
 });
 
 
-
-// ==========================================
-// EQUIPOS
-// ==========================================
-
-// OBTENER TODOS LOS EQUIPOS
-app.get('/routes/equipo', async (req, res) => {
-    try {
-        const result = await pool.query(`
-            SELECT e.*, 
-                   m.nombre AS nombre_marca, 
-                   c.nombres AS cliente_nombres, 
-                   c.apellidos AS cliente_apellidos
-            FROM equipo e
-            LEFT JOIN marca m ON e.marca_id = m.marca_id
-            LEFT JOIN clientes c ON e.cliente_id = c.cliente_id
-            ORDER BY e.equipo_id DESC
-        `);
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching equipos:', error);
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
-    }
-});
-
-// CREAR EQUIPO
-app.post('/routes/equipo', async (req, res) => {
-    const { tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id } = req.body;
-
-    try {
-        const query = await pool.query(
-            'INSERT INTO equipo(tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *', 
-            [tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id]
-        );
-        res.status(201).json(query.rows[0]);
-        console.log('Equipo registrado correctamente:', query.rows[0]);
-    } catch (error) {
-        console.error('Error inserting equipo:', error);
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
-    }
-});
-
-// EDITAR EQUIPO
-app.put('/routes/equipo/:id', async (req, res) => {
-    const { id } = req.params;
-    const { tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id } = req.body;
-    try {
-        const result = await pool.query(
-            `UPDATE equipo SET 
-                tipo_equipo=$1, 
-                modelo=$2, 
-                referencia=$3, 
-                numero_serie=$4, 
-                observaciones=$5, 
-                marca_id=$6, 
-                cliente_id=$7 
-               WHERE equipo_id=$8 RETURNING *`,
-            [tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id, id]
-        );
-        res.json(result.rows[0]);
-    } catch (error) {
-        console.error('Error updating equipo:', error);
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
-    }
-});
-
-// ELIMINAR EQUIPO
-app.delete('/routes/equipo/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        await pool.query('DELETE FROM equipo WHERE equipo_id=$1', [id]);
-        res.json({ success: true, message: 'Equipo eliminado correctamente' });
-    } catch (error) {
-        console.error('Error deleting equipo:', error);
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
-    }
-});
+//LOGIN
 
 
+// revisar si el correo y la contraseña son correctos para dejar entrar al usuario
 app.post('/login', async (req, res) => {
     const { correo, contrasena } = req.body;
 
@@ -141,6 +69,7 @@ app.post('/login', async (req, res) => {
     }
 });
 
+// registrar un usuario nuevo en el sistema
 app.post('/routes/usuario', async (req, res) => {
     const { nombre, nombre_usuario, correo, contrasena } = req.body;
 
@@ -161,7 +90,88 @@ app.post('/routes/usuario', async (req, res) => {
     }
 });
 
-// OBTENER TODOS LOS CLIENTES
+
+//EQUIPO
+
+
+// pedir todos los equipos juntando tablas para traer el nombre de la marca y del cliente
+app.get('/routes/equipo', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT e.*, 
+                   m.nombre AS nombre_marca, 
+                   c.nombres AS cliente_nombres, 
+                   c.apellidos AS cliente_apellidos
+            FROM equipo e
+            LEFT JOIN marca m ON e.marca_id = m.marca_id
+            LEFT JOIN clientes c ON e.cliente_id = c.cliente_id
+            ORDER BY e.equipo_id DESC
+        `);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching equipos:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// crear un equipo nuevo en la base de datos
+app.post('/routes/equipo', async (req, res) => {
+    const { tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id } = req.body;
+
+    try {
+        const query = await pool.query(
+            'INSERT INTO equipo(tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *', 
+            [tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id]
+        );
+        res.status(201).json(query.rows[0]);
+        console.log('Equipo registrado correctamente:', query.rows[0]);
+    } catch (error) {
+        console.error('Error inserting equipo:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// actualizar los datos de un equipo que ya existe
+app.put('/routes/equipo/:id', async (req, res) => {
+    const { id } = req.params;
+    const { tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id } = req.body;
+    try {
+        const result = await pool.query(
+            `UPDATE equipo SET 
+                tipo_equipo=$1, 
+                modelo=$2, 
+                referencia=$3, 
+                numero_serie=$4, 
+                observaciones=$5, 
+                marca_id=$6, 
+                cliente_id=$7 
+               WHERE equipo_id=$8 RETURNING *`,
+            [tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id, id]
+        );
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error updating equipo:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// borrar un equipo de la base de datos
+app.delete('/routes/equipo/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM equipo WHERE equipo_id=$1', [id]);
+        res.json({ success: true, message: 'Equipo eliminado correctamente' });
+    } catch (error) {
+        console.error('Error deleting equipo:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+
+//PERSONAS 
+
+
+// pedir todos los clientes de la base de datos
 app.get('/routes/clientes', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM clientes ORDER BY cliente_id DESC');
@@ -172,11 +182,10 @@ app.get('/routes/clientes', async (req, res) => {
     }
 });
 
-// CREAR CLIENTE
+// guardar un cliente nuevo
 app.post('/routes/clientes', async (req, res) => {
     const { tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad } = req.body;
 
-    // Si apellidos viene como undefined o string vacío, guardamos null
     const apellidosValue = apellidos && apellidos.trim() !== '' ? apellidos : null;
 
     try {
@@ -192,12 +201,11 @@ app.post('/routes/clientes', async (req, res) => {
     }
 });
 
-// EDITAR CLIENTE
+// editar la informacion de un cliente
 app.put('/routes/clientes/:id', async (req, res) => {
     const { id } = req.params;
     const { tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad } = req.body;
 
-    // Si apellidos viene como undefined o string vacío, guardamos null
     const apellidosValue = apellidos && apellidos.trim() !== '' ? apellidos : null;
 
     try {
@@ -226,7 +234,7 @@ app.put('/routes/clientes/:id', async (req, res) => {
     }
 });
 
-// ELIMINAR CLIENTE
+// eliminar un cliente
 app.delete('/routes/clientes/:id', async (req, res) => {
     const { id } = req.params;
     try {
@@ -238,11 +246,22 @@ app.delete('/routes/clientes/:id', async (req, res) => {
     }
 });
 
-// ==========================================
-// EMPLEADOS
-// ==========================================
+// traer una lista de clientes desplegables
+app.get('/routes/listaclientes', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT cliente_id, nombres, apellidos FROM clientes ORDER BY nombres ASC');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al obtener lista de clientes:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
 
-// OBTENER TODOS LOS EMPLEADOS
+
+//EMPLEADOS
+
+
+// pedir todos los empleados
 app.get('/routes/empleado', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM empleado ORDER BY empleado_id DESC');
@@ -253,7 +272,7 @@ app.get('/routes/empleado', async (req, res) => {
     }
 });
 
-// CREAR EMPLEADO
+// registrar un empleado nuevo
 app.post('/routes/empleado', async (req, res) => {
     const { tipo_documento, documento, nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;
 
@@ -271,7 +290,7 @@ app.post('/routes/empleado', async (req, res) => {
     }
 });
 
-// EDITAR EMPLEADO
+// editar los datos de un empleado
 app.put('/routes/empleado/:id', async (req, res) => {
     const { id } = req.params;
     const { tipo_documento, documento, nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;
@@ -296,7 +315,7 @@ app.put('/routes/empleado/:id', async (req, res) => {
     }
 });
 
-// ELIMINAR EMPLEADO
+// borrar un empleado de la lista
 app.delete('/routes/empleado/:id', async (req, res) => {
     const { id } = req.params;
     try {
@@ -308,37 +327,7 @@ app.delete('/routes/empleado/:id', async (req, res) => {
     }
 });
 
-
-// ==========================================
-// REPORTES Y LISTAS AUXILIARES
-// ==========================================
-
-app.get('/routes/reporteclientes', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM clientes');
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching clientes:', error);
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
-    }
-});
-
-app.get('/routes/reporteequipos', async (req, res) => {
-    try {
-        const result = await pool.query(`
-            SELECT e.equipo_id, e.tipo_equipo, e.modelo, e.referencia, e.numero_serie,
-                e.estado, m.nombre AS nombre_marca, c.nombres, c.apellidos
-                FROM equipo e
-                JOIN marca m ON e.marca_id = m.marca_id
-                JOIN clientes c ON e.cliente_id = c.cliente_id
-        `);
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching equipos:', error);
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
-    }
-});
-
+// traer una lista de empleados desplegables
 app.get('/routes/listaempleados', async (req, res) => {
     try {
         const result = await pool.query('SELECT empleado_id, nombres, apellidos, cargo FROM empleado ORDER BY nombres ASC');
@@ -349,16 +338,72 @@ app.get('/routes/listaempleados', async (req, res) => {
     }
 });
 
-app.get('/routes/listaclientes', async (req, res) => {
+
+//SERVICIOS
+
+
+// traer la lista de los servicios disponibles
+app.get('/routes/servicios', async (req, res) => {
     try {
-        const result = await pool.query('SELECT cliente_id, nombres, apellidos FROM clientes ORDER BY nombres ASC');
+        const result = await pool.query(
+            'SELECT servicio_id, nombre, descripcion, precio_base, observaciones FROM servicio ORDER BY nombre ASC'
+        );
         res.json(result.rows);
     } catch (error) {
-        console.error('Error al obtener lista de clientes:', error);
+        console.error('Error fetching servicios:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 });
 
+// crear un servicio nuevo con su precio
+app.post('/routes/servicios', async (req, res) => {
+    const { nombre, descripcion, precio_base, observaciones } = req.body;
+    try {
+        const result = await pool.query(
+            'INSERT INTO servicio (nombre, descripcion, precio_base, observaciones) VALUES ($1, $2, $3, $4) RETURNING servicio_id, nombre, descripcion, precio_base, observaciones',
+            [nombre, descripcion, precio_base, observaciones]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error creating servicio:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// editar el nombre o precio de un servicio
+app.put('/routes/servicios/:id', async (req, res) => {
+    const { id } = req.params;
+    const { nombre, descripcion, precio_base, observaciones } = req.body;
+    try {
+        const result = await pool.query(
+            `UPDATE servicio SET 
+                nombre=$1, 
+                descripcion=$2, 
+                precio_base=$3, 
+                observaciones=$4 
+               WHERE servicio_id=$5 RETURNING *`,
+            [nombre, descripcion, precio_base, observaciones, id]
+        );
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error updating servicio:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// eliminar un servicio 
+app.delete('/routes/servicios/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM servicio WHERE servicio_id=$1', [id]);
+        res.json({ success: true, message: 'Servicio eliminado correctamente' });
+    } catch (error) {
+        console.error('Error deleting servicio:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// traer una lista de servicios desplegables
 app.get('/routes/listaservicios', async (req, res) => {
     try {
         const result = await pool.query('SELECT servicio_id, nombre FROM servicio ORDER BY nombre ASC');
@@ -369,10 +414,11 @@ app.get('/routes/listaservicios', async (req, res) => {
     }
 });
 
-// ==========================================
-// TICKETS
-// ==========================================
 
+//TICKETS
+
+
+// pedir todos los tickets y juntar la informacion 
 app.get('/routes/tickets', async (req, res) => {
     try {
         const result = await pool.query(`
@@ -403,6 +449,7 @@ app.get('/routes/tickets', async (req, res) => {
     }
 });
 
+// crear un ticket nuevo para reportar un daño
 app.post('/routes/tickets', async (req, res) => {
     const { fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id } = req.body;
     try {
@@ -419,6 +466,7 @@ app.post('/routes/tickets', async (req, res) => {
     }
 });
 
+// actualizar la informacion o estado de un ticket
 app.put('/routes/tickets/:id', async (req, res) => {
     const { id } = req.params;
     const { fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id } = req.body;
@@ -442,6 +490,7 @@ app.put('/routes/tickets/:id', async (req, res) => {
     }
 });
 
+// borrar un ticket del sistema
 app.delete('/routes/tickets/:id', async (req, res) => {
     const { id } = req.params;
     try {
@@ -453,72 +502,43 @@ app.delete('/routes/tickets/:id', async (req, res) => {
     }
 });
 
-// ==========================================
-// SERVICIOS
-// ==========================================
 
-app.get('/routes/servicios', async (req, res) => {
+//REPORTE
+
+
+// traer los clientes para los reportes
+app.get('/routes/reporteclientes', async (req, res) => {
     try {
-        const result = await pool.query(
-            'SELECT servicio_id, nombre, descripcion, precio_base, observaciones FROM servicio ORDER BY nombre ASC'
-        );
+        const result = await pool.query('SELECT * FROM clientes');
         res.json(result.rows);
     } catch (error) {
-        console.error('Error fetching servicios:', error);
+        console.error('Error fetching clientes:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 });
 
-app.post('/routes/servicios', async (req, res) => {
-    const { nombre, descripcion, precio_base, observaciones } = req.body;
+// traer los equipos para los reportes juntando sus marcas y clientes
+app.get('/routes/reporteequipos', async (req, res) => {
     try {
-        const result = await pool.query(
-            'INSERT INTO servicio (nombre, descripcion, precio_base, observaciones) VALUES ($1, $2, $3, $4) RETURNING servicio_id, nombre, descripcion, precio_base, observaciones',
-            [nombre, descripcion, precio_base, observaciones]
-        );
-        res.status(201).json(result.rows[0]);
+        const result = await pool.query(`
+            SELECT e.equipo_id, e.tipo_equipo, e.modelo, e.referencia, e.numero_serie,
+                e.estado, m.nombre AS nombre_marca, c.nombres, c.apellidos
+                FROM equipo e
+                JOIN marca m ON e.marca_id = m.marca_id
+                JOIN clientes c ON e.cliente_id = c.cliente_id
+        `);
+        res.json(result.rows);
     } catch (error) {
-        console.error('Error creating servicio:', error);
+        console.error('Error fetching equipos:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 });
 
-app.put('/routes/servicios/:id', async (req, res) => {
-    const { id } = req.params;
-    const { nombre, descripcion, precio_base, observaciones } = req.body;
-    try {
-        const result = await pool.query(
-            `UPDATE servicio SET 
-                nombre=$1, 
-                descripcion=$2, 
-                precio_base=$3, 
-                observaciones=$4 
-               WHERE servicio_id=$5 RETURNING *`,
-            [nombre, descripcion, precio_base, observaciones, id]
-        );
-        res.json(result.rows[0]);
-    } catch (error) {
-        console.error('Error updating servicio:', error);
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
-    }
-});
 
-app.delete('/routes/servicios/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        await pool.query('DELETE FROM servicio WHERE servicio_id=$1', [id]);
-        res.json({ success: true, message: 'Servicio eliminado correctamente' });
-    } catch (error) {
-        console.error('Error deleting servicio:', error);
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
-    }
-});
+//MARCA
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Servidor ejecutándose en el puerto ${PORT}`);
-});
 
+// traer la lista de marcas desplegable
 app.get('/routes/marca', async (req, res) => {
     try {
         const result = await pool.query('SELECT marca_id, nombre FROM marca ORDER BY nombre ASC');
@@ -527,4 +547,14 @@ app.get('/routes/marca', async (req, res) => {
         console.error('Error fetching marcas:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
+});
+
+
+// INICIAR SERVIDOR
+
+
+// prender el servidor para que empiece a escuchar en el puerto 3000
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor ejecutándose en el puerto ${PORT}`);
 });

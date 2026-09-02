@@ -45,7 +45,7 @@ export default function Tickets() {
             })
             .catch((err) => console.error(err));
     }, []);
-
+    // Filtrado y búsqueda de tickets mediante la libreria memo
     const filteredTickets = useMemo(() => {
         const q = search.trim().toLowerCase();
         return tickets
@@ -53,7 +53,7 @@ export default function Tickets() {
                 if (activeFilter !== "All") {
                     const map = {
                         Open: ["open", "abierto"],
-                        "In Progress": ["in progress", "en progreso", "inprogress"],
+                        "In Progress": ["in progress", "en proceso", "inprogress"],
                         Pending: ["pending", "pendiente"],
                         Resolved: ["resolved", "resuelto"],
                     };
@@ -75,29 +75,25 @@ export default function Tickets() {
             })
             .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
     }, [search, tickets, activeFilter]);
-
+    
+    // Cálculo de estadísticas de tickets mediante la libreria memo
     const stats = useMemo(() => {
-        const open = tickets.filter((t) => /open|abierto/i.test(String(t.estado_ticket))).length;
-        const inProgress = tickets.filter((t) => /in progress|en progreso|inprogress/i.test(String(t.estado_ticket))).length;
-        const pending = tickets.filter((t) => /pending|pendiente/i.test(String(t.estado_ticket))).length;
-        const resolved = tickets.filter((t) => /resolved|resuelto/i.test(String(t.estado_ticket))).length;
+        const abiertos = tickets.filter((t) => /abierto/i.test(String(t.estado_ticket))).length;
+        const enProceso = tickets.filter((t) => /en proceso/i.test(String(t.estado_ticket))).length;
+        const pendientes = tickets.filter((t) => /pendiente/i.test(String(t.estado_ticket))).length;
+        const resueltos = tickets.filter((t) => /resuelto/i.test(String(t.estado_ticket))).length;
 
-        const today = new Date();
-        const resolvedToday = tickets.filter((t) => {
+        const hoy = new Date();
+        const resueltosHoy = tickets.filter((t) => {
             if (!t.updated_at) return false;
             const d = new Date(t.updated_at);
-            return /resolved|resuelto/i.test(String(t.estado_ticket)) &&
-                d.getFullYear() === today.getFullYear() &&
-                d.getMonth() === today.getMonth() &&
-                d.getDate() === today.getDate();
+            return /resuelto/i.test(String(t.estado_ticket)) &&
+                d.getFullYear() === hoy.getFullYear() &&
+                d.getMonth() === hoy.getMonth() &&
+                d.getDate() === hoy.getDate();
         }).length;
 
-        const times = tickets.map((t) => Number(t.tiempo_respuesta_min)).filter((n) => !isNaN(n) && n > 0);
-        const avgResponseMin = times.length ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : null;
-
-        const urgent = tickets.filter((t) => /critical|high|alta|critico/i.test(String(t.prioridad))).length;
-
-        return { abiertos: open, EnProgreso: inProgress, pending, resolved, resolvedToday, avgResponseMin, urgentes: urgent };
+        return { abiertos, enProceso, pendientes, resueltos, resueltosHoy };
     }, [tickets]);
 
     const formatTimeAgo = (iso) => {
@@ -122,7 +118,7 @@ export default function Tickets() {
     const statusBadge = (s) => {
         const st = String(s ?? "").toLowerCase();
         if (/open|abierto/i.test(st)) return "bg-emerald-600 text-white";
-        if (/in progress|en progreso|inprogress/i.test(st)) return "bg-indigo-500 text-white";
+        if (/in progress|en proceso|inprogress/i.test(st)) return "bg-indigo-500 text-white";
         if (/pending|pendiente/i.test(st)) return "bg-amber-500 text-black";
         if (/resolved|resuelto/i.test(st)) return "bg-gray-700 text-white";
         return "bg-gray-600 text-white";
@@ -269,40 +265,34 @@ export default function Tickets() {
                     <div className="text-sm text-gray-400">Tickets abiertos</div>
                     <div className="flex items-baseline justify-between">
                         <div className="text-2xl font-bold text-white">{stats.abiertos}</div>
-                        <div className="text-sm text-green-400">20</div>
                     </div>
                     <div className="text-xs text-gray-400 mt-1">En cola</div>
                 </div>
 
-        <div className="p-4 bg-[#121316]/60 backdrop-blur-sm rounded-xl border border-[#222]">
-            <div className="text-sm text-gray-400">En progreso</div>
-            <div className="flex items-baseline justify-between">
-            <div className="text-2xl font-bold text-white">{stats.EnProgreso}</div>
-            <div className="text-sm text-green-400">{stats.urgentes} urgentes</div>
-            </div>
-            <div className="text-xs text-gray-400 mt-1">Asignados</div>
-        </div>
+                <div className="p-4 bg-[#121316]/60 backdrop-blur-sm rounded-xl border border-[#222]">
+                    <div className="text-sm text-gray-400">En proceso</div>
+                    <div className="flex items-baseline justify-between">
+                        <div className="text-2xl font-bold text-white">{stats.enProceso}</div>
+                    </div>
+                    <div className="text-xs text-gray-400 mt-1">Asignados</div>
+                </div>
 
-        <div className="p-4 bg-[#121316]/60 backdrop-blur-sm rounded-xl border border-[#222]">
-            <div className="text-sm text-gray-400">Pendientes</div>
-            <div className="flex items-baseline justify-between">
-            <div className="text-2xl font-bold text-white">
-                {stats.avgResponseMin ? `${Math.floor(stats.avgResponseMin / 60)}h ${stats.avgResponseMin % 60}m` : "—"}
-            </div>
-            <div className="text-sm text-green-400">12</div>
-            </div>
-            <div className="text-xs text-gray-400 mt-1">Promedio</div>
-        </div>
+                <div className="p-4 bg-[#121316]/60 backdrop-blur-sm rounded-xl border border-[#222]">
+                    <div className="text-sm text-gray-400">Pendientes</div>
+                    <div className="flex items-baseline justify-between">
+                        <div className="text-2xl font-bold text-white">{stats.pendientes}</div>
+                    </div>
+                    <div className="text-xs text-gray-400 mt-1">En espera</div>
+                </div>
 
-        <div className="p-4 bg-[#121316]/60 backdrop-blur-sm rounded-xl border border-[#222]">
-            <div className="text-sm text-gray-400">Resueltos hoy</div>
-            <div className="flex items-baseline justify-between">
-            <div className="text-2xl font-bold text-white">{stats.resolvedToday}</div>
-            <div className="text-sm text-green-400">5</div>
+                <div className="p-4 bg-[#121316]/60 backdrop-blur-sm rounded-xl border border-[#222]">
+                    <div className="text-sm text-gray-400">Resueltos hoy</div>
+                    <div className="flex items-baseline justify-between">
+                        <div className="text-2xl font-bold text-white">{stats.resueltosHoy}</div>
+                    </div>
+                    <div className="text-xs text-gray-400 mt-1">Cerrados</div>
+                </div>
             </div>
-            <div className="text-xs text-gray-400 mt-1">Cerrados</div>
-        </div>
-        </div>
 
             {/* Tabla principal: en mobile mostramos tarjetas, en md+ la tabla */}
             <div className="space-y-4">

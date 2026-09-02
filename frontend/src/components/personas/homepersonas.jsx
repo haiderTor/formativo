@@ -1,20 +1,20 @@
 import { useState, useEffect, useMemo } from "react";
 
 export default function GestionCentralizada() {
-    // ESTADO DE PESTAÑAS
+    // saber en que pestaña estamos clientes o empleados
     const [activeTab, setActiveTab] = useState("clientes");
 
-    // ESTADOS GLOBALES
+    // variables generales para buscar ventanas y eliminar
     const [search, setSearch] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
     const [itemToDelete, setItemToDelete] = useState(null);
 
-    // PAGINACIÓN NUMÉRICA
+    // variables para controlar la paginacion
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(10);
 
-    // ESTADOS DE CLIENTES
+    // guardar la lista de clientes y los datos del formulario vacio
     const [clientes, setClientes] = useState([]);
     const [newCliente, setNewCliente] = useState({
         tipo_documento: "",
@@ -27,7 +27,7 @@ export default function GestionCentralizada() {
         ciudad: "",
     });
 
-    // ESTADOS DE EMPLEADOS
+    // guardar la lista de empleados y sus datos para el formulario
     const [empleados, setEmpleados] = useState([]);
     const [newEmpleado, setNewEmpleado] = useState({
         tipo_documento: "",
@@ -40,7 +40,7 @@ export default function GestionCentralizada() {
         cargo: ""
     });
 
-    // OBTENER DATOS (Clientes y Empleados)
+    // pedir los datos al servidor cuando carga la pagina
     useEffect(() => {
         fetch("http://localhost:3000/routes/clientes")
             .then((res) => res.json())
@@ -53,17 +53,17 @@ export default function GestionCentralizada() {
             .catch((err) => console.error("Error cargando empleados:", err));
     }, []);
 
-    // CAMBIAR PESTAÑA
+    // funcion para cambiar de pestaña y reiniciar la busqueda
     const handleTabChange = (tab) => {
         setActiveTab(tab);
         setSearch("");
         setCurrentPage(1);
     };
 
-    // LÓGICA DE DATOS ACTIVOS 
+    // ver que lista usar dependiendo de la pestaña seleccionada
     const activeData = activeTab === "clientes" ? clientes : empleados;
 
-    // FILTRO DE BÚSQUEDA
+    // buscar y filtrar datos segun lo que escriba el usuario
     const filteredData = useMemo(() => {
         return activeData.filter((item) =>
             Object.values(item).some((val) =>
@@ -72,31 +72,33 @@ export default function GestionCentralizada() {
         );
     }, [search, activeData]);
 
-    // LÓGICA DE PAGINACIÓN
+    // calculos para saber cuantos registros mostrar en la pagina actual
     const totalPages = Math.ceil(filteredData.length / itemsPerPage) || 1;
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
+    // funcion para moverse entre las paginas
     const paginate = (pageNumber) => {
         if (pageNumber >= 1 && pageNumber <= totalPages) {
             setCurrentPage(pageNumber);
         }
     };
 
-    // HANDLERS FORMULARIOS
+    // guardar lo que se escribe en el formulario de clientes
     const handleClienteChange = (e) => {
         setNewCliente({ ...newCliente, [e.target.name]: e.target.value });
     };
 
+    // guardar lo que se escribe en el formulario de empleados
     const handleEmpleadoChange = (e) => {
         setNewEmpleado({ ...newEmpleado, [e.target.name]: e.target.value });
     };
 
-    // SUBMIT UNIFICADO
+    // funcion principal para guardar o editar en la base de datos
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         const isCliente = activeTab === "clientes";
         const endpoint = isCliente ? "http://localhost:3000/routes/clientes" : "http://localhost:3000/routes/empleado";
         const payload = isCliente ? newCliente : newEmpleado;
@@ -104,7 +106,7 @@ export default function GestionCentralizada() {
 
         try {
             if (editingItem) {
-                // EDITAR
+                // actualizar un registro existente
                 const response = await fetch(`${endpoint}/${editingItem[idField]}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
@@ -118,13 +120,13 @@ export default function GestionCentralizada() {
                     setEmpleados(empleados.map((emp) => emp.empleado_id === updated.empleado_id ? updated : emp));
                 }
             } else {
-                // CREAR
+                // crear un registro nuevo
                 const response = await fetch(endpoint, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload),
                 });
-                
+
                 const data = await response.json();
                 if (isCliente) {
                     setClientes([...clientes, data]);
@@ -141,6 +143,7 @@ export default function GestionCentralizada() {
         }
     };
 
+    // abrir la ventana con los datos listos para editar
     const handleEdit = (item) => {
         setEditingItem(item);
         if (activeTab === "clientes") {
@@ -151,22 +154,23 @@ export default function GestionCentralizada() {
         setShowModal(true);
     };
 
+    // confirmar y borrar un registro 
     const confirmDelete = async () => {
         if (itemToDelete) {
             const isCliente = activeTab === "clientes";
-            const endpoint = isCliente 
+            const endpoint = isCliente
                 ? `http://localhost:3000/routes/clientes/${itemToDelete}`
                 : `http://localhost:3000/routes/empleado/${itemToDelete}`;
 
             try {
                 await fetch(endpoint, { method: "DELETE" });
-                
+
                 if (isCliente) {
                     setClientes(clientes.filter((c) => c.cliente_id !== itemToDelete));
                 } else {
                     setEmpleados(empleados.filter((emp) => emp.empleado_id !== itemToDelete));
                 }
-                
+
                 setItemToDelete(null);
                 if (currentItems.length === 1 && currentPage > 1) {
                     setCurrentPage(currentPage - 1);
@@ -177,6 +181,7 @@ export default function GestionCentralizada() {
         }
     };
 
+    // limpiar el formulario 
     const openCreateModal = () => {
         setEditingItem(null);
         if (activeTab === "clientes") {
@@ -187,33 +192,33 @@ export default function GestionCentralizada() {
         setShowModal(true);
     };
 
+    // diseño de la pagina y la tabla
     return (
         <div className="p-4 sm:p-6 bg-[#0f1113] min-h-screen text-gray-200">
-            {/* Header: título + acciones */}
+            {/* parte de arriba con el titulo y botones */}
             <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4 mb-6">
                 <div>
                     <h1 className="text-xl sm:text-2xl font-bold text-white capitalize">{activeTab}</h1>
                 </div>
 
                 <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 w-full xl:w-auto">
-                    {/* Pestañas / filtros */}
+                    {/* botones para cambiar de pestaña */}
                     <div className="flex flex-wrap gap-2 items-center bg-[#121316]/40 backdrop-blur-sm rounded-md p-1">
                         {["clientes", "empleados"].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => handleTabChange(tab)}
-                                className={`px-3 py-1.5 text-sm font-medium rounded-md transition whitespace-nowrap capitalize ${
-                                    activeTab === tab
-                                        ? "bg-linear-to-r from-orange-600 to-orange-400 text-white shadow"
-                                        : "text-gray-300 hover:bg-white/5"
-                                }`}
+                                className={`px-3 py-1.5 text-sm font-medium rounded-md transition whitespace-nowrap capitalize ${activeTab === tab
+                                    ? "bg-linear-to-r from-orange-600 to-orange-400 text-white shadow"
+                                    : "text-gray-300 hover:bg-white/5"
+                                    }`}
                             >
                                 {tab}
                             </button>
                         ))}
                     </div>
 
-                    {/* Buscador */}
+                    {/* barra de busqueda */}
                     <div className="relative w-full lg:w-64">
                         <input
                             value={search}
@@ -229,7 +234,7 @@ export default function GestionCentralizada() {
                         </svg>
                     </div>
 
-                    {/* Botones */}
+                    {/* botones de accion principal */}
                     <div className="flex items-center gap-2">
                         <button className="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-200 rounded-md shadow-sm text-sm font-semibold transition-transform hover:scale-105">
                             Importar
@@ -247,9 +252,9 @@ export default function GestionCentralizada() {
                 </div>
             </div>
 
-            {/* Tabla / Lista: en mobile mostramos tarjetas, en md+ la tabla */}
+            {/* lista de datos que cambia si es celular o pc */}
             <div className="space-y-4">
-                {/* Mobile list (cards) */}
+                {/* vista para celulares */}
                 <ul className="md:hidden space-y-3">
                     {currentItems.map((item) => {
                         const id = activeTab === "clientes" ? item.cliente_id : item.empleado_id;
@@ -286,7 +291,7 @@ export default function GestionCentralizada() {
                     )}
                 </ul>
 
-                {/* Desktop table */}
+                {/* vista pantallas grandes */}
                 <div className="hidden md:block bg-[#0b0c0d]/60 border border-[#222] rounded-xl overflow-hidden">
                     <div className="px-4 py-3 border-b border-[#1f1f1f] flex items-center justify-between">
                         <div className="text-sm text-gray-300 font-semibold capitalize">{activeTab}</div>
@@ -362,19 +367,18 @@ export default function GestionCentralizada() {
                 </div>
             </div>
 
-            {/* CONTROLES DE PAGINACIÓN */}
+            {/* botones paginacion */}
             {filteredData.length > itemsPerPage && (
                 <div className="flex flex-col sm:flex-row justify-between items-center mt-6 p-4 bg-[#0b0c0d]/60 border border-[#222] rounded-xl gap-4">
                     <button
                         onClick={() => paginate(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all w-full sm:w-auto ${
-                            currentPage === 1 ? "bg-white/5 text-gray-600 cursor-not-allowed" : "bg-white/10 hover:bg-white/20 text-gray-200"
-                        }`}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all w-full sm:w-auto ${currentPage === 1 ? "bg-white/5 text-gray-600 cursor-not-allowed" : "bg-white/10 hover:bg-white/20 text-gray-200"
+                            }`}
                     >
                         Anterior
                     </button>
-                    
+
                     <div className="flex flex-wrap justify-center gap-1.5">
                         {Array.from({ length: totalPages }, (_, index) => {
                             const pageNumber = index + 1;
@@ -382,11 +386,10 @@ export default function GestionCentralizada() {
                                 <button
                                     key={pageNumber}
                                     onClick={() => paginate(pageNumber)}
-                                    className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
-                                        currentPage === pageNumber 
-                                            ? "bg-orange-500 text-white shadow-md" 
-                                            : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
-                                    }`}
+                                    className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${currentPage === pageNumber
+                                        ? "bg-orange-500 text-white shadow-md"
+                                        : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+                                        }`}
                                 >
                                     {pageNumber}
                                 </button>
@@ -397,16 +400,15 @@ export default function GestionCentralizada() {
                     <button
                         onClick={() => paginate(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all w-full sm:w-auto ${
-                            currentPage === totalPages ? "bg-white/5 text-gray-600 cursor-not-allowed" : "bg-white/10 hover:bg-white/20 text-gray-200"
-                        }`}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all w-full sm:w-auto ${currentPage === totalPages ? "bg-white/5 text-gray-600 cursor-not-allowed" : "bg-white/10 hover:bg-white/20 text-gray-200"
+                            }`}
                     >
                         Siguiente
                     </button>
                 </div>
             )}
 
-            {/* Modal crear/editar: responsive */}
+            {/* ventana flotante para crear o editar registros */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
                     <div className="absolute inset-0 bg-black/60" onClick={() => { setShowModal(false); setEditingItem(null); }} />
@@ -419,8 +421,8 @@ export default function GestionCentralizada() {
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            
-                            {/* FORMULARIO PARA CLIENTES */}
+
+                            {/* campos de texto si se va a guardar un cliente */}
                             {activeTab === "clientes" && (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
@@ -433,7 +435,7 @@ export default function GestionCentralizada() {
                                             <option value="CE">Cédula de Extranjería</option>
                                         </select>
                                     </div>
-                                    
+
                                     <div>
                                         <label className="block text-xs text-gray-400 mb-1">Número de Documento</label>
                                         <input type="text" name="documento" placeholder="Ej: 1002345678" value={newCliente.documento} onChange={handleClienteChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" required />
@@ -446,7 +448,7 @@ export default function GestionCentralizada() {
 
                                     <div>
                                         <label className="block text-xs text-gray-400 mb-1">Apellidos</label>
-                                        <input type="text" name="apellidos" placeholder="Ej: Perez Lopez" value={newCliente.apellidos} onChange={handleClienteChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500"  />
+                                        <input type="text" name="apellidos" placeholder="Ej: Perez Lopez" value={newCliente.apellidos} onChange={handleClienteChange} className="w-full bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-2 focus:ring-orange-500" />
                                     </div>
 
                                     <div>
@@ -471,7 +473,7 @@ export default function GestionCentralizada() {
                                 </div>
                             )}
 
-                            {/* FORMULARIO PARA EMPLEADOS */}
+                            {/* campos de texto si se va a guardar un empleado */}
                             {activeTab === "empleados" && (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
@@ -542,7 +544,7 @@ export default function GestionCentralizada() {
                 </div>
             )}
 
-            {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN */}
+            {/* advertencia antes de borrar algo*/}
             {itemToDelete !== null && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
                     <div className="absolute inset-0 bg-black/60" onClick={() => setItemToDelete(null)} />

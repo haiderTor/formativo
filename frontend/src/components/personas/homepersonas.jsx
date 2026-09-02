@@ -60,7 +60,7 @@ export default function GestionCentralizada() {
         setCurrentPage(1);
     };
 
-    // LÓGICA DE DATOS ACTIVOS (Depende de la pestaña)
+    // LÓGICA DE DATOS ACTIVOS 
     const activeData = activeTab === "clientes" ? clientes : empleados;
 
     // FILTRO DE BÚSQUEDA

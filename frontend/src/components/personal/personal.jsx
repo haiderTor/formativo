@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 export default function EmpleadoForm() {
+    // crear un molde vacio para guardar los datos del empleado 
     const [formData, setFormData] = useState({
         nombres: "",
         apellidos: "",
@@ -10,6 +11,7 @@ export default function EmpleadoForm() {
         cargo: ""
     });
 
+    // guarda formulario 
     const handleChange = (e) => {
         setFormData({
         ...formData,
@@ -17,9 +19,11 @@ export default function EmpleadoForm() {
         });
     };
 
+    // enviar los datos al servidor para guardar el empleado
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+        // hacer la peticion al servidor para guardar los datos
         const response = await fetch("http://localhost:3000/routes/empleado", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -27,6 +31,8 @@ export default function EmpleadoForm() {
         });
 
         const data = await response.json();
+        
+        // si se guardo bien mostrar un aviso y dejar las casillas en blanco otra vez
         if (data.success) {
             alert("Empleado registrado correctamente");
             setFormData({
@@ -47,6 +53,7 @@ export default function EmpleadoForm() {
     };
 
     return (
+        // diseño visual de la caja del formulario y sus casillas
         <form
         onSubmit={handleSubmit}
         className="max-w-lg mx-auto bg-[#191a1d] shadow-md rounded-lg p-6 space-y-4"

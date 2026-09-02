@@ -1,22 +1,33 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 
 export default function Equipos() {
+  // guardar las listas de equipos clientes y marcas que vienen de la base de datos
   const [equipos, setEquipos] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [marcas, setMarcas] = useState([]);
   
+  // guardar que se escribe en el buscador general
   const [search, setSearch] = useState("");
+  
+  // saber como organizar la lista
   const [sortOption, setSortOption] = useState("tipo_equipo");
+  
+  // controlar si la ventana flotante del formulario se ve o no
   const [showModal, setShowModal] = useState(false);
+  
+  // guardar los datos del equipo que quiero editar
   const [editingEquipo, setEditingEquipo] = useState(null);
+  
+  // guardar el id del equipo que seleccione para borrar
   const [itemToDelete, setItemToDelete] = useState(null);
   
-  // Estados para los selectores buscables
+  // variables para que las casillas de marcas y clientes funcionen como un buscador
   const [searchMarca, setSearchMarca] = useState("");
   const [showMarcasDropdown, setShowMarcasDropdown] = useState(false);
   const [searchCliente, setSearchCliente] = useState("");
   const [showClientesDropdown, setShowClientesDropdown] = useState(false);
 
+  // un molde vacio para llenar los datos al crear o editar un equipo
   const [newEquipo, setNewEquipo] = useState({
     tipo_equipo: "",
     modelo: "",
@@ -27,32 +38,31 @@ export default function Equipos() {
     cliente_id: ""
   });
 
-  // OBTENER DATOS (Equipos, Clientes y Marcas)
+  // pedir toda la informacion al servidor al mismo tiempo equipos clientes y marcas
   const fetchAllData = () => {
-    // Equipos
+    
     fetch("http://localhost:3000/routes/equipo")
       .then((res) => res.json())
       .then((data) => setEquipos(data))
       .catch((err) => console.error(err));
 
-    // Clientes (usamos la ruta general para tener acceso al documento/cédula)
     fetch("http://localhost:3000/routes/clientes")
       .then((res) => res.json())
       .then((data) => setClientes(data))
       .catch((err) => console.error(err));
 
-    // Marcas (Asume que existe esta ruta en tu backend)
     fetch("http://localhost:3000/routes/marca")
       .then((res) => res.json())
       .then((data) => setMarcas(data))
       .catch((err) => console.error("Error cargando marcas:", err));
   };
 
+  // hacer que los datos se carguen 
   useEffect(() => {
     fetchAllData();
   }, []);
 
-  // FILTRO Y ORDENAMIENTO DE LA TABLA
+  // filtrar los equipos segun lo que escriba en el buscador y ordenarlos
   const filteredEquipos = useMemo(() => {
     let result = equipos.filter((equipo) =>
       Object.values(equipo).some((val) =>
@@ -69,11 +79,12 @@ export default function Equipos() {
     return result;
   }, [search, equipos, sortOption]);
 
-  // MANEJO DEL FORMULARIO
+  //  guardar formulario 
   const handleChange = (e) => {
     setNewEquipo({ ...newEquipo, [e.target.name]: e.target.value });
   };
 
+  // enviar los datos guardados para crear un equipo nuevo o actualizar uno que ya existe
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -99,7 +110,7 @@ export default function Equipos() {
         return res.json();
       })
       .then(() => {
-        fetchAllData(); // Refresca todo para traer los nombres actualizados
+        fetchAllData(); 
         closeModal();
       })
       .catch((err) => {
@@ -108,6 +119,7 @@ export default function Equipos() {
       });
   };
 
+  // borrar el equipo de la base de datos
   const confirmDelete = () => {
     if (itemToDelete) {
       fetch(`http://localhost:3000/routes/equipo/${itemToDelete}`, {
@@ -121,7 +133,7 @@ export default function Equipos() {
     }
   };
 
-  // ABRIR/CERRAR MODALES Y LIMPIAR ESTADOS
+  // abrir la ventana con los datos del equipo listos para modificar
   const openEditModal = (equipo) => {
     setEditingEquipo(equipo);
     setNewEquipo({
@@ -133,7 +145,7 @@ export default function Equipos() {
       marca_id: equipo.marca_id || "",
       cliente_id: equipo.cliente_id || ""
     });
-    // Setear los inputs de búsqueda con los nombres actuales
+    
     setSearchMarca(equipo.nombre_marca || "");
     const nombreCompleto = equipo.cliente_nombres ? `${equipo.cliente_nombres} ${equipo.cliente_apellidos || ''}` : "";
     setSearchCliente(nombreCompleto);
@@ -141,6 +153,7 @@ export default function Equipos() {
     setShowModal(true);
   };
 
+  // cerrar la ventana y limpiar
   const closeModal = () => {
     setShowModal(false);
     setEditingEquipo(null);
@@ -157,7 +170,7 @@ export default function Equipos() {
     });
   };
 
-  // LÓGICA DE FILTRADO PARA DROPDOWNS
+  // filtrar las opciones de marca y cliente 
   const filteredMarcas = marcas.filter(m => 
     m.nombre?.toLowerCase().includes(searchMarca.toLowerCase())
   );
@@ -172,25 +185,26 @@ export default function Equipos() {
 
   return (
     <div className="p-4 sm:p-6 bg-[#0f1113] min-h-screen text-gray-200">
-      {/* Header: título + acciones */}
+      
+      {/* titulo buscador y boton para crear */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white">Equipos</h1>
         </div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
-          {/* Select de Ordenamiento */}
+          
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
             className="bg-[#0b0c0d] border border-[#222] rounded-md px-3 py-2 text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
           >
-            <option value="tipo_equipo">Por tipo</option>
+            
             <option value="asc">Ascendente</option>
             <option value="desc">Descendente</option>
           </select>
 
-          {/* Buscador */}
+          
           <div className="relative w-full sm:w-64">
             <input
               type="text"
@@ -204,10 +218,10 @@ export default function Equipos() {
             </svg>
           </div>
 
-          {/* Botón Nuevo */}
+          
           <button
             onClick={() => {
-              closeModal(); // Asegura limpiar todo
+              closeModal(); 
               setShowModal(true);
             }}
             className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md shadow-sm text-sm font-semibold transition-transform hover:scale-105"
@@ -217,9 +231,9 @@ export default function Equipos() {
         </div>
       </div>
 
-      {/* Tabla / Lista */}
       <div className="space-y-4">
-        {/* Mobile list (cards) */}
+        
+        {/* diseño celular */}
         <ul className="md:hidden space-y-3">
           {filteredEquipos.map((equipo) => (
             <li key={equipo.equipo_id} className="border border-[#222] p-3 rounded-xl bg-[#0b0c0d]/60">
@@ -253,7 +267,7 @@ export default function Equipos() {
           ))}
         </ul>
 
-        {/* Desktop table */}
+        {/* tabla grande computador */}
         <div className="hidden md:block bg-[#0b0c0d]/60 border border-[#222] rounded-xl overflow-hidden">
           <div className="px-4 py-3 border-b border-[#1f1f1f] flex items-center justify-between">
             <div className="text-sm text-gray-300 font-semibold">Equipos</div>
@@ -312,7 +326,7 @@ export default function Equipos() {
         </div>
       </div>
 
-      {/* Modal crear/editar */}
+      {/* ventana flotante donde lleno los datos para guardar o editar el equipo */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/60" onClick={closeModal} />
@@ -351,7 +365,7 @@ export default function Equipos() {
                   />
                 </div>
                 
-                {/* AUTOCOMPLETAR MARCA */}
+                {/* buscador desplegable para elegir la marca */}
                 <div className="relative">
                   <label className="block text-xs text-gray-400 mb-1">Marca</label>
                   <input
@@ -361,7 +375,7 @@ export default function Equipos() {
                     onChange={(e) => {
                       setSearchMarca(e.target.value);
                       setShowMarcasDropdown(true);
-                      setNewEquipo({ ...newEquipo, marca_id: "" }); // Resetea ID si cambia texto
+                      setNewEquipo({ ...newEquipo, marca_id: "" }); 
                     }}
                     onFocus={() => setShowMarcasDropdown(true)}
                     onBlur={() => setTimeout(() => setShowMarcasDropdown(false), 200)}
@@ -373,7 +387,7 @@ export default function Equipos() {
                       {filteredMarcas.map(m => (
                         <li
                           key={m.marca_id}
-                          // onMouseDown dispara antes que onBlur, evitando bugs
+                          
                           onMouseDown={(e) => {
                             e.preventDefault();
                             setSearchMarca(m.nombre);
@@ -389,7 +403,7 @@ export default function Equipos() {
                   )}
                 </div>
 
-                {/* AUTOCOMPLETAR CLIENTE */}
+                {/* buscador desplegable para elegir al dueño del equipo por nombre o cedula */}
                 <div className="relative">
                   <label className="block text-xs text-gray-400 mb-1">Propietario (Cédula o Nombre)</label>
                   <input
@@ -472,7 +486,7 @@ export default function Equipos() {
                 >
                   Cancelar
                 </button>
-                {/* Deshabilitamos el botón si no han seleccionado una marca y cliente válidos del listado */}
+                
                 <button
                   type="submit"
                   disabled={!newEquipo.marca_id || !newEquipo.cliente_id}
@@ -486,7 +500,7 @@ export default function Equipos() {
         </div>
       )}
 
-      {/* Modal de eliminación se mantiene igual... */}
+      {/* advertencia si borrar el equipo para evitar errores */}
       {itemToDelete !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/60" onClick={() => setItemToDelete(null)} />

@@ -1,20 +1,33 @@
 import { useState, useEffect, useMemo } from "react";
-// Variables de estado para manejar los servicios, búsqueda, ordenamiento, modales y formularios
+
 export default function Servicios() {
+  // guardar los servicios que llegan de la base de datos
   const [servicios, setServicios] = useState([]);
+  
+  // guardar el texto para buscar servicios
   const [search, setSearch] = useState("");
+  
+  // saber como organizar la lista
   const [sortOption, setSortOption] = useState("nombre");
+  
+  // controlar si la ventana del formulario se ve o no
   const [showModal, setShowModal] = useState(false);
+  
+  // guardar los datos del servicio a editar
   const [editingServicio, setEditingServicio] = useState(null);
+  
+  // guardar cual servicio para borrar
   const [itemToDelete, setItemToDelete] = useState(null);
-  // Estado para el formulario de creación/edición de servicios
+  
+  // un molde vacio para llenar al crear o editar un servicio
   const [newServicio, setNewServicio] = useState({
     nombre: "",
     descripcion: "",
     precio_base: "",
     observaciones: "",
   });
-  // Fetch de servicios desde el backend al cargar el componente
+
+  // pedir los servicios al servidor apenas carga la pagina
   useEffect(() => {
     fetch("http://localhost:3000/routes/servicios")
       .then((res) => res.json())
@@ -22,6 +35,7 @@ export default function Servicios() {
       .catch((err) => console.error(err));
   }, []);
 
+  // filtrar la lista segun lo que se escriba en el buscador y ordenarla alfabeticamente
   const filteredServicios = useMemo(() => {
     let result = servicios.filter((servicio) =>
       Object.values(servicio).some((val) =>
@@ -38,10 +52,12 @@ export default function Servicios() {
     return result;
   }, [search, servicios, sortOption]);
 
+  // guarda formulario
   const handleChange = (e) => {
     setNewServicio({ ...newServicio, [e.target.name]: e.target.value });
   };
 
+  // enviar los datos para crear un servicio nuevo o actualizar uno que ya existe
   const handleSubmit = (e) => {
     e.preventDefault();
     const url = editingServicio
@@ -72,6 +88,7 @@ export default function Servicios() {
       .catch((err) => console.error(err));
   };
 
+  // borrar el servicio de la base de datos definitivamente
   const confirmDelete = () => {
     if (itemToDelete) {
       fetch(`http://localhost:3000/routes/servicios/${itemToDelete}`, {
@@ -85,12 +102,14 @@ export default function Servicios() {
     }
   };
 
+  // abrir la ventana con los datos del servicio listos para modificar
   const openEditModal = (servicio) => {
     setEditingServicio(servicio);
     setNewServicio(servicio);
     setShowModal(true);
   };
 
+  // cerrar la ventana y limpiar las casillas del formulario
   const closeModal = () => {
     setShowModal(false);
     setEditingServicio(null);
@@ -104,14 +123,15 @@ export default function Servicios() {
 
   return (
     <div className="p-4 sm:p-6 bg-[#0f1113] min-h-screen text-gray-200">
-      {/* Header: título + acciones */}
+      
+      {/* parte de arriba con titulo buscador y boton de crear */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white">Servicios</h1>
         </div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
-          {/* Select de Ordenamiento */}
+          
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
@@ -122,7 +142,7 @@ export default function Servicios() {
             <option value="desc">Descendente</option>
           </select>
 
-          {/* Buscador */}
+          
           <div className="relative w-full sm:w-64">
             <input
               type="text"
@@ -136,7 +156,7 @@ export default function Servicios() {
             </svg>
           </div>
 
-          {/* Botón Nuevo */}
+          
           <button
             onClick={() => {
               setNewServicio({
@@ -155,9 +175,9 @@ export default function Servicios() {
         </div>
       </div>
 
-      {/* Tabla / Lista: en mobile mostramos tarjetas, en md+ la tabla */}
       <div className="space-y-4">
-        {/* Mobile list (cards) */}
+        
+        {/* diseño en forma de tarjetas para cuando se ve desde un celular */}
         <ul className="md:hidden space-y-3">
           {filteredServicios.map((servicio) => (
             <li key={servicio.servicio_id} className="border border-[#222] p-3 rounded-xl bg-[#0b0c0d]/60">
@@ -191,7 +211,7 @@ export default function Servicios() {
           )}
         </ul>
 
-        {/* Desktop table */}
+        {/* tabla grande para cuando se ve desde un computador */}
         <div className="hidden md:block bg-[#0b0c0d]/60 border border-[#222] rounded-xl overflow-hidden">
           <div className="px-4 py-3 border-b border-[#1f1f1f] flex items-center justify-between">
             <div className="text-sm text-gray-300 font-semibold">Servicios</div>
@@ -249,7 +269,7 @@ export default function Servicios() {
         </div>
       </div>
 
-      {/* Modal crear/editar: responsive */}
+      {/* ventana flotante donde lleno los datos para guardar o editar */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/60" onClick={closeModal} />
@@ -333,7 +353,7 @@ export default function Servicios() {
         </div>
       )}
 
-      {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN */}
+      {/* adveertencia si de verdad quiero borrar el servicio */}
       {itemToDelete !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/60" onClick={() => setItemToDelete(null)} />

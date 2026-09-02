@@ -412,7 +412,7 @@ export default function Tickets() {
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
                     <div className="absolute inset-0 bg-black/60" onClick={closeModal} />
-                    <div className="relative w-full max-w-3xl md:max-w-4xl lg:max-w-5xl bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-xl shadow-2xl border border-[#222] z-10 max-h-[90vh] overflow-y-auto">
+                    <div className="relative w-full max-w-3xl md:max-w-4xl lg:max-w-5xl bg-linear-to-br from-gray-800 to-gray-900 p-6 rounded-xl shadow-2xl border border-[#222] z-10 max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-lg font-semibold text-white">{editingTicket ? "Editar ticket" : "Nuevo ticket"}</h3>
                             <button onClick={closeModal} className="text-gray-400 hover:text-white">X</button>

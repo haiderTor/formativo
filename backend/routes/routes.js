@@ -31,13 +31,13 @@ app.get('/routes/equipo', async (req, res) => {
     try {
         const result = await pool.query(`
             SELECT e.*, 
-                   m.nombre AS nombre_marca, 
-                   c.nombres AS cliente_nombres, 
-                   c.apellidos AS cliente_apellidos
-            FROM equipo e
-            LEFT JOIN marca m ON e.marca_id = m.marca_id
-            LEFT JOIN clientes c ON e.cliente_id = c.cliente_id
-            ORDER BY e.equipo_id DESC
+                m.nombre AS nombre_marca, 
+                c.nombres AS cliente_nombres, 
+                c.apellidos AS cliente_apellidos
+                FROM equipo e
+                LEFT JOIN marca m ON e.marca_id = m.marca_id
+                LEFT JOIN clientes c ON e.cliente_id = c.cliente_id
+                ORDER BY e.equipo_id DESC
         `);
         res.json(result.rows);
     } catch (error) {
@@ -49,7 +49,6 @@ app.get('/routes/equipo', async (req, res) => {
 // CREAR EQUIPO
 app.post('/routes/equipo', async (req, res) => {
     const { tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id } = req.body;
-
     try {
         const query = await pool.query(
             'INSERT INTO equipo(tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *', 

@@ -28,25 +28,44 @@ router.post("/usuario", validateRegister, async (req, res) => {
 router.post("/login", async (req, res) => {
     const { correo, contrasena } = req.body;
     try {
+        // Buscar usuario por correo
         const query = await pool.query("SELECT * FROM usuario WHERE correo=$1", [correo]);
         if (query.rows.length === 0) {
         return res.status(401).json({ success: false, message: "Usuario no encontrado" });
     }
 
     const usuario = query.rows[0];
+
+    // Validar contraseña con bcrypt
     const validPassword = await bcrypt.compare(contrasena, usuario.contrasena);
     if (!validPassword) {
         return res.status(401).json({ success: false, message: "Credenciales inválidas" });
     }
 
-    const token = jwt.sign({ id: usuario.usuario_id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    res.json({ success: true, message: "Login exitoso", token });
+    // Generar token JWT
+    const token = jwt.sign(
+      { id: usuario.usuario_id, correo: usuario.correo }, // payload
+      process.env.JWT_SECRET,                             // clave secreta en .env
+      { expiresIn: "1h" }                                 // duración del token
+    );
+
+    // Responder con token
+    res.json({
+        success: true,
+        message: "Login exitoso",
+        token,
+        usuario: { id: usuario.usuario_id, nombre: usuario.nombre, correo: usuario.correo }
+    });
+
+    console.log("Usuario autenticado:", usuario);
     } catch (error) {
-    res.status(500).json({ success: false, error: "Internal Server Error" });
+        console.error("Error en login:", error);
+        res.status(500).json({ success: false, error: "Internal Server Error" });
     }
 });
 
-// Perfil protegido
+
+// Perfil protegido REVISAR
 router.get("/profile", verifyToken, async (req, res) => {
     try {
         const result = await pool.query("SELECT usuario_id, nombre, correo FROM usuario WHERE usuario_id=$1", [req.user.id]);
@@ -116,7 +135,7 @@ router.post('/login', async (req, res) => {
 });
 
 // registrar un usuario nuevo en el sistema
-router.post('/routes/usuario', async (req, res) => {
+router.post('/api/usuario', async (req, res) => {
     const { nombre, nombre_usuario, correo, contrasena } = req.body;
 
     try {
@@ -141,7 +160,7 @@ router.post('/routes/usuario', async (req, res) => {
 
 
 // pedir todos los equipos juntando tablas para traer el nombre de la marca y del cliente
-router.get('/routes/equipo', async (req, res) => {
+router.get('/api/equipo', async (req, res) => {
     try {
         const result = await pool.query(`
             SELECT e.*, 
@@ -161,7 +180,7 @@ router.get('/routes/equipo', async (req, res) => {
 });
 
 // crear un equipo nuevo en la base de datos
-router.post('/routes/equipo', async (req, res) => {
+router.post('/api/equipo', async (req, res) => {
     const { tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id } = req.body;
 
     try {
@@ -178,7 +197,7 @@ router.post('/routes/equipo', async (req, res) => {
 });
 
 // actualizar los datos de un equipo que ya existe
-router.put('/routes/equipo/:id', async (req, res) => {
+router.put('/api/equipo/:id', async (req, res) => {
     const { id } = req.params;
     const { tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id } = req.body;
     try {
@@ -202,7 +221,7 @@ router.put('/routes/equipo/:id', async (req, res) => {
 });
 
 // borrar un equipo de la base de datos
-router.delete('/routes/equipo/:id', async (req, res) => {
+router.delete('/api/equipo/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await pool.query('DELETE FROM equipo WHERE equipo_id=$1', [id]);
@@ -218,7 +237,7 @@ router.delete('/routes/equipo/:id', async (req, res) => {
 
 
 // pedir todos los clientes de la base de datos
-router.get('/routes/clientes', async (req, res) => {
+router.get('/api/clientes', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM clientes ORDER BY cliente_id DESC');
         res.json(result.rows);
@@ -229,7 +248,7 @@ router.get('/routes/clientes', async (req, res) => {
 });
 
 // guardar un cliente nuevo
-router.post('/routes/clientes', async (req, res) => {
+router.post('/api/clientes', async (req, res) => {
     const { tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad } = req.body;
 
     const apellidosValue = apellidos && apellidos.trim() !== '' ? apellidos : null;
@@ -248,7 +267,7 @@ router.post('/routes/clientes', async (req, res) => {
 });
 
 // editar la informacion de un cliente
-router.put('/routes/clientes/:id', async (req, res) => {
+router.put('/api/clientes/:id', async (req, res) => {
     const { id } = req.params;
     const { tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad } = req.body;
 
@@ -281,7 +300,7 @@ router.put('/routes/clientes/:id', async (req, res) => {
 });
 
 // eliminar un cliente
-router.delete('/routes/clientes/:id', async (req, res) => {
+router.delete('/api/clientes/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await pool.query('DELETE FROM clientes WHERE cliente_id=$1', [id]);
@@ -293,7 +312,7 @@ router.delete('/routes/clientes/:id', async (req, res) => {
 });
 
 // traer una lista de clientes desplegables
-router.get('/routes/listaclientes', async (req, res) => {
+router.get('/api/listaclientes', async (req, res) => {
     try {
         const result = await pool.query('SELECT cliente_id, nombres, apellidos FROM clientes ORDER BY nombres ASC');
         res.json(result.rows);
@@ -308,7 +327,7 @@ router.get('/routes/listaclientes', async (req, res) => {
 
 
 // pedir todos los empleados
-router.get('/routes/empleado', async (req, res) => {
+router.get('/api/empleado', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM empleado ORDER BY empleado_id DESC');
         res.json(result.rows);
@@ -319,7 +338,7 @@ router.get('/routes/empleado', async (req, res) => {
 });
 
 // registrar un empleado nuevo
-router.post('/routes/empleado', async (req, res) => {
+router.post('/api/empleado', async (req, res) => {
     const { tipo_documento, documento, nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;
 
     try {
@@ -337,7 +356,7 @@ router.post('/routes/empleado', async (req, res) => {
 });
 
 // editar los datos de un empleado
-router.put('/routes/empleado/:id', async (req, res) => {
+router.put('/api/empleado/:id', async (req, res) => {
     const { id } = req.params;
     const { tipo_documento, documento, nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;
     try {
@@ -362,7 +381,7 @@ router.put('/routes/empleado/:id', async (req, res) => {
 });
 
 // borrar un empleado de la lista
-router.delete('/routes/empleado/:id', async (req, res) => {
+router.delete('/api/empleado/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await pool.query('DELETE FROM empleado WHERE empleado_id=$1', [id]);
@@ -374,7 +393,7 @@ router.delete('/routes/empleado/:id', async (req, res) => {
 });
 
 // traer una lista de empleados desplegables
-router.get('/routes/listaempleados', async (req, res) => {
+router.get('/api/listaempleados', async (req, res) => {
     try {
         const result = await pool.query('SELECT empleado_id, nombres, apellidos, cargo FROM empleado ORDER BY nombres ASC');
         res.json(result.rows);
@@ -389,7 +408,7 @@ router.get('/routes/listaempleados', async (req, res) => {
 
 
 // traer la lista de los servicios disponibles
-router.get('/routes/servicios', async (req, res) => {
+router.get('/api/servicios', async (req, res) => {
     try {
         const result = await pool.query(
             'SELECT servicio_id, nombre, descripcion, precio_base, observaciones FROM servicio ORDER BY nombre ASC'
@@ -402,7 +421,7 @@ router.get('/routes/servicios', async (req, res) => {
 });
 
 // crear un servicio nuevo con su precio
-router.post('/routes/servicios', async (req, res) => {
+router.post('/api/servicios', async (req, res) => {
     const { nombre, descripcion, precio_base, observaciones } = req.body;
     try {
         const result = await pool.query(
@@ -417,7 +436,7 @@ router.post('/routes/servicios', async (req, res) => {
 });
 
 // editar el nombre o precio de un servicio
-router.put('/routes/servicios/:id', async (req, res) => {
+router.put('/api/servicios/:id', async (req, res) => {
     const { id } = req.params;
     const { nombre, descripcion, precio_base, observaciones } = req.body;
     try {
@@ -438,7 +457,7 @@ router.put('/routes/servicios/:id', async (req, res) => {
 });
 
 // eliminar un servicio 
-router.delete('/routes/servicios/:id', async (req, res) => {
+router.delete('/api/servicios/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await pool.query('DELETE FROM servicio WHERE servicio_id=$1', [id]);
@@ -450,7 +469,7 @@ router.delete('/routes/servicios/:id', async (req, res) => {
 });
 
 // traer una lista de servicios desplegables
-router.get('/routes/listaservicios', async (req, res) => {
+router.get('/api/listaservicios', async (req, res) => {
     try {
         const result = await pool.query('SELECT servicio_id, nombre FROM servicio ORDER BY nombre ASC');
         res.json(result.rows);
@@ -465,7 +484,7 @@ router.get('/routes/listaservicios', async (req, res) => {
 
 
 // pedir todos los tickets y juntar la informacion 
-router.get('/routes/tickets', async (req, res) => {
+router.get('/api/tickets', async (req, res) => {
     try {
         const result = await pool.query(`
             SELECT 
@@ -496,7 +515,7 @@ router.get('/routes/tickets', async (req, res) => {
 });
 
 // crear un ticket nuevo para reportar un daño
-router.post('/routes/tickets', async (req, res) => {
+router.post('/api/tickets', async (req, res) => {
     const { fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id } = req.body;
     try {
         const result = await pool.query(
@@ -513,7 +532,7 @@ router.post('/routes/tickets', async (req, res) => {
 });
 
 // actualizar la informacion o estado de un ticket
-router.put('/routes/tickets/:id', async (req, res) => {
+router.put('/api/tickets/:id', async (req, res) => {
     const { id } = req.params;
     const { fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id } = req.body;
     try {
@@ -537,7 +556,7 @@ router.put('/routes/tickets/:id', async (req, res) => {
 });
 
 // borrar un ticket del sistema
-router.delete('/routes/tickets/:id', async (req, res) => {
+router.delete('/api/tickets/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await pool.query('DELETE FROM ticket WHERE ticket_id=$1', [id]);
@@ -553,7 +572,7 @@ router.delete('/routes/tickets/:id', async (req, res) => {
 
 
 // traer los clientes para los reportes
-router.get('/routes/reporteclientes', async (req, res) => {
+router.get('/api/reporteclientes', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM clientes');
         res.json(result.rows);
@@ -564,7 +583,7 @@ router.get('/routes/reporteclientes', async (req, res) => {
 });
 
 // traer los equipos para los reportes juntando sus marcas y clientes
-router.get('/routes/reporteequipos', async (req, res) => {
+router.get('/api/reporteequipos', async (req, res) => {
     try {
         const result = await pool.query(`
             SELECT e.equipo_id, e.tipo_equipo, e.modelo, e.referencia, e.numero_serie,
@@ -585,7 +604,7 @@ router.get('/routes/reporteequipos', async (req, res) => {
 
 
 // traer la lista de marcas desplegable
-router.get('/routes/marca', async (req, res) => {
+router.get('/api/marca', async (req, res) => {
     try {
         const result = await pool.query('SELECT marca_id, nombre FROM marca ORDER BY nombre ASC');
         res.json(result.rows);

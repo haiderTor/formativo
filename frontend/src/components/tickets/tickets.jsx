@@ -26,7 +26,7 @@ export default function Tickets() {
     });
     //Fetch de tickets desde el backend al cargar el componente
     useEffect(() => {
-        fetch("http://localhost:3000/routes/tickets")
+        fetch("http://localhost:3000/api/tickets")
             .then((res) => res.json())
             .then((data) => {
                 const normalized = (data || []).map((t) => ({
@@ -158,7 +158,7 @@ export default function Tickets() {
         const payload = { ...newTicket, fecha_creacion: newTicket.fecha_creacion || new Date().toISOString(), updated_at: new Date().toISOString() };
 
         if (editingTicket) {
-            fetch(`http://localhost:3000/routes/tickets/${editingTicket.ticket_id}`, {
+            fetch(`http://localhost:3000/api/tickets/${editingTicket.ticket_id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
@@ -170,7 +170,7 @@ export default function Tickets() {
                 })
                 .catch((err) => console.error(err));
         } else {
-            fetch("http://localhost:3000/routes/tickets", {
+            fetch("http://localhost:3000/api/tickets", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
@@ -201,7 +201,7 @@ export default function Tickets() {
 
     const confirmDelete = () => {
         if (itemToDelete) {
-            fetch(`http://localhost:3000/routes/tickets/${itemToDelete}`, { method: "DELETE" })
+            fetch(`http://localhost:3000/api/tickets/${itemToDelete}`, { method: "DELETE" })
                 .then(() => {
                     setTickets((prev) => prev.filter((t) => t.ticket_id !== itemToDelete));
                     setItemToDelete(null);

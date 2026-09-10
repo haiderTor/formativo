@@ -41,17 +41,17 @@ export default function Equipos() {
   // pedir toda la informacion al servidor al mismo tiempo equipos clientes y marcas
   const fetchAllData = () => {
     
-    fetch("http://localhost:3000/routes/equipo")
+    fetch("http://localhost:3000/api/equipo")
       .then((res) => res.json())
       .then((data) => setEquipos(data))
       .catch((err) => console.error(err));
 
-    fetch("http://localhost:3000/routes/clientes")
+    fetch("http://localhost:3000/api/clientes")
       .then((res) => res.json())
       .then((data) => setClientes(data))
       .catch((err) => console.error(err));
 
-    fetch("http://localhost:3000/routes/marca")
+    fetch("http://localhost:3000/api/marca")
       .then((res) => res.json())
       .then((data) => setMarcas(data))
       .catch((err) => console.error("Error cargando marcas:", err));
@@ -95,8 +95,8 @@ export default function Equipos() {
     };
     
     const url = editingEquipo
-      ? `http://localhost:3000/routes/equipo/${editingEquipo.equipo_id}`
-      : "http://localhost:3000/routes/equipo";
+      ? `http://localhost:3000/api/equipo/${editingEquipo.equipo_id}`
+      : "http://localhost:3000/api/equipo";
 
     const method = editingEquipo ? "PUT" : "POST";
 
@@ -122,7 +122,7 @@ export default function Equipos() {
   // borrar el equipo de la base de datos
   const confirmDelete = () => {
     if (itemToDelete) {
-      fetch(`http://localhost:3000/routes/equipo/${itemToDelete}`, {
+      fetch(`http://localhost:3000/api/equipo/${itemToDelete}`, {
         method: "DELETE",
       })
         .then(() => {

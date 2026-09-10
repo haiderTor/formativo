@@ -10,7 +10,7 @@ const router = express.Router();
 // ================== USUARIOS ==================
 
 // Registro de usuario
-router.post("/usuario", validateRegister, async (req, res) => {
+router.post("/api/usuario", validateRegister, async (req, res) => {
     const { nombre, nombre_usuario, correo, contrasena } = req.body;
     try {
     const hashedPassword = await bcrypt.hash(contrasena, 10);
@@ -25,7 +25,7 @@ router.post("/usuario", validateRegister, async (req, res) => {
 });
 
 // Login de usuario
-router.post("/login", async (req, res) => {
+router.post("/api/login", async (req, res) => {
     const { correo, contrasena } = req.body;
     try {
         // Buscar usuario por correo
@@ -430,7 +430,7 @@ router.post('/api/servicios', async (req, res) => {
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
-        console.error('Error creating servicio:', error);
+        console.error('Error al crear el servicio:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 });

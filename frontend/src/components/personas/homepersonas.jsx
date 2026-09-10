@@ -42,12 +42,12 @@ export default function GestionCentralizada() {
 
     // pedir los datos al servidor cuando carga la pagina
     useEffect(() => {
-        fetch("http://localhost:3000/routes/clientes")
+        fetch("http://localhost:3000/api/clientes")
             .then((res) => res.json())
             .then((data) => setClientes(data))
             .catch((err) => console.error("Error cargando clientes:", err));
 
-        fetch("http://localhost:3000/routes/empleado")
+        fetch("http://localhost:3000/api/empleado")
             .then((res) => res.json())
             .then((data) => setEmpleados(data))
             .catch((err) => console.error("Error cargando empleados:", err));
@@ -100,7 +100,7 @@ export default function GestionCentralizada() {
         e.preventDefault();
 
         const isCliente = activeTab === "clientes";
-        const endpoint = isCliente ? "http://localhost:3000/routes/clientes" : "http://localhost:3000/routes/empleado";
+        const endpoint = isCliente ? "http://localhost:3000/api/clientes" : "http://localhost:3000/api/empleado";
         const payload = isCliente ? newCliente : newEmpleado;
         const idField = isCliente ? "cliente_id" : "empleado_id";
 
@@ -159,8 +159,8 @@ export default function GestionCentralizada() {
         if (itemToDelete) {
             const isCliente = activeTab === "clientes";
             const endpoint = isCliente
-                ? `http://localhost:3000/routes/clientes/${itemToDelete}`
-                : `http://localhost:3000/routes/empleado/${itemToDelete}`;
+                ? `http://localhost:3000/api/clientes/${itemToDelete}`
+                : `http://localhost:3000/api/empleado/${itemToDelete}`;
 
             try {
                 await fetch(endpoint, { method: "DELETE" });

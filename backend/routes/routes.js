@@ -1,34 +1,99 @@
-import express from 'express';
-import pg from 'pg';
-import dotenv from 'dotenv';
-import cors from 'cors';
+import express from "express";
+import { pool } from "../server.js"; // conexión exportada desde server.js
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { verifyToken } from "../middleware/auth.js";
+import { validateRegister } from "../middleware/validate.js";
 
-// cargar las variables de entorno como contraseñas y puertos
-dotenv.config();
+const router = express.Router();
 
-const { Pool } = pg;
-const app = express();
+// ================== USUARIOS ==================
 
-// configurar el servidor para que acepte peticiones de otros lados y entienda json
-app.use(cors());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+// Registro de usuario
+router.post("/api/usuario", validateRegister, async (req, res) => {
+    const { nombre, nombre_usuario, correo, contrasena } = req.body;
+    try {
+    const hashedPassword = await bcrypt.hash(contrasena, 10);
+    const query = await pool.query(
+      "INSERT INTO usuario (nombre, nombre_usuario, correo, contrasena) VALUES ($1, $2, $3, $4) RETURNING *",
+        [nombre, nombre_usuario, correo, hashedPassword]
+    );
+    res.status(201).json({ success: true, data: query.rows[0] });
+    } catch (error) {
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+});
 
-// conectar la base de datos de postgres 
-const pool = new Pool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
+// Login de usuario
+router.post("/api/login", async (req, res) => {
+    const { correo, contrasena } = req.body;
+    try {
+        // Buscar usuario por correo
+        const query = await pool.query("SELECT * FROM usuario WHERE correo=$1", [correo]);
+        if (query.rows.length === 0) {
+        return res.status(401).json({ success: false, message: "Usuario no encontrado" });
+    }
+
+    const usuario = query.rows[0];
+
+    // Validar contraseña con bcrypt
+    const validPassword = await bcrypt.compare(contrasena, usuario.contrasena);
+    if (!validPassword) {
+        return res.status(401).json({ success: false, message: "Credenciales inválidas" });
+    }
+
+    // Generar token JWT
+    const token = jwt.sign(
+      { id: usuario.usuario_id, correo: usuario.correo }, // payload
+      process.env.JWT_SECRET,                             // clave secreta en .env
+      { expiresIn: "1h" }                                 // duración del token
+    );
+
+    // Responder con token
+    res.json({
+        success: true,
+        message: "Login exitoso",
+        token,
+        usuario: { id: usuario.usuario_id, nombre: usuario.nombre, correo: usuario.correo }
+    });
+
+    console.log("Usuario autenticado:", usuario);
+    } catch (error) {
+        console.error("Error en login:", error);
+        res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
 });
 
 
-//LOGIN
+// Perfil protegido REVISAR
+router.get("/profile", verifyToken, async (req, res) => {
+    try {
+        const result = await pool.query("SELECT usuario_id, nombre, correo FROM usuario WHERE usuario_id=$1", [req.user.id]);
+        res.json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+});
+
+// ================== EQUIPOS ==================
+router.get("/equipo", async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT e.*, m.nombre AS nombre_marca, c.nombres AS cliente_nombres, c.apellidos AS cliente_apellidos
+            FROM equipo e
+            LEFT JOIN marca m ON e.marca_id = m.marca_id
+            LEFT JOIN clientes c ON e.cliente_id = c.cliente_id
+            ORDER BY e.equipo_id DESC
+        `);
+        res.json(result.rows);
+        } catch (error) {
+        res.status(500).json({ success: false, error: "Internal Server Error" });
+        }
+});
 
 
 // revisar si el correo y la contraseña son correctos para dejar entrar al usuario
-app.post('/login', async (req, res) => {
+router.post('/login', async (req, res) => {
     const { correo, contrasena } = req.body;
 
     try {
@@ -70,7 +135,7 @@ app.post('/login', async (req, res) => {
 });
 
 // registrar un usuario nuevo en el sistema
-app.post('/routes/usuario', async (req, res) => {
+router.post('/api/usuario', async (req, res) => {
     const { nombre, nombre_usuario, correo, contrasena } = req.body;
 
     try {
@@ -95,17 +160,17 @@ app.post('/routes/usuario', async (req, res) => {
 
 
 // pedir todos los equipos juntando tablas para traer el nombre de la marca y del cliente
-app.get('/routes/equipo', async (req, res) => {
+router.get('/api/equipo', async (req, res) => {
     try {
         const result = await pool.query(`
             SELECT e.*, 
-                   m.nombre AS nombre_marca, 
-                   c.nombres AS cliente_nombres, 
-                   c.apellidos AS cliente_apellidos
-            FROM equipo e
-            LEFT JOIN marca m ON e.marca_id = m.marca_id
-            LEFT JOIN clientes c ON e.cliente_id = c.cliente_id
-            ORDER BY e.equipo_id DESC
+                m.nombre AS nombre_marca, 
+                c.nombres AS cliente_nombres, 
+                c.apellidos AS cliente_apellidos
+                FROM equipo e
+                LEFT JOIN marca m ON e.marca_id = m.marca_id
+                LEFT JOIN clientes c ON e.cliente_id = c.cliente_id
+                ORDER BY e.equipo_id DESC
         `);
         res.json(result.rows);
     } catch (error) {
@@ -115,7 +180,7 @@ app.get('/routes/equipo', async (req, res) => {
 });
 
 // crear un equipo nuevo en la base de datos
-app.post('/routes/equipo', async (req, res) => {
+router.post('/api/equipo', async (req, res) => {
     const { tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id } = req.body;
 
     try {
@@ -132,7 +197,7 @@ app.post('/routes/equipo', async (req, res) => {
 });
 
 // actualizar los datos de un equipo que ya existe
-app.put('/routes/equipo/:id', async (req, res) => {
+router.put('/api/equipo/:id', async (req, res) => {
     const { id } = req.params;
     const { tipo_equipo, modelo, referencia, numero_serie, observaciones, marca_id, cliente_id } = req.body;
     try {
@@ -156,7 +221,7 @@ app.put('/routes/equipo/:id', async (req, res) => {
 });
 
 // borrar un equipo de la base de datos
-app.delete('/routes/equipo/:id', async (req, res) => {
+router.delete('/api/equipo/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await pool.query('DELETE FROM equipo WHERE equipo_id=$1', [id]);
@@ -172,7 +237,7 @@ app.delete('/routes/equipo/:id', async (req, res) => {
 
 
 // pedir todos los clientes de la base de datos
-app.get('/routes/clientes', async (req, res) => {
+router.get('/api/clientes', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM clientes ORDER BY cliente_id DESC');
         res.json(result.rows);
@@ -183,7 +248,7 @@ app.get('/routes/clientes', async (req, res) => {
 });
 
 // guardar un cliente nuevo
-app.post('/routes/clientes', async (req, res) => {
+router.post('/api/clientes', async (req, res) => {
     const { tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad } = req.body;
 
     const apellidosValue = apellidos && apellidos.trim() !== '' ? apellidos : null;
@@ -202,7 +267,7 @@ app.post('/routes/clientes', async (req, res) => {
 });
 
 // editar la informacion de un cliente
-app.put('/routes/clientes/:id', async (req, res) => {
+router.put('/api/clientes/:id', async (req, res) => {
     const { id } = req.params;
     const { tipo_documento, documento, nombres, apellidos, telefono, correo, direccion, ciudad } = req.body;
 
@@ -235,7 +300,7 @@ app.put('/routes/clientes/:id', async (req, res) => {
 });
 
 // eliminar un cliente
-app.delete('/routes/clientes/:id', async (req, res) => {
+router.delete('/api/clientes/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await pool.query('DELETE FROM clientes WHERE cliente_id=$1', [id]);
@@ -247,7 +312,7 @@ app.delete('/routes/clientes/:id', async (req, res) => {
 });
 
 // traer una lista de clientes desplegables
-app.get('/routes/listaclientes', async (req, res) => {
+router.get('/api/listaclientes', async (req, res) => {
     try {
         const result = await pool.query('SELECT cliente_id, nombres, apellidos FROM clientes ORDER BY nombres ASC');
         res.json(result.rows);
@@ -262,7 +327,7 @@ app.get('/routes/listaclientes', async (req, res) => {
 
 
 // pedir todos los empleados
-app.get('/routes/empleado', async (req, res) => {
+router.get('/api/empleado', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM empleado ORDER BY empleado_id DESC');
         res.json(result.rows);
@@ -273,7 +338,7 @@ app.get('/routes/empleado', async (req, res) => {
 });
 
 // registrar un empleado nuevo
-app.post('/routes/empleado', async (req, res) => {
+router.post('/api/empleado', async (req, res) => {
     const { tipo_documento, documento, nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;
 
     try {
@@ -291,7 +356,7 @@ app.post('/routes/empleado', async (req, res) => {
 });
 
 // editar los datos de un empleado
-app.put('/routes/empleado/:id', async (req, res) => {
+router.put('/api/empleado/:id', async (req, res) => {
     const { id } = req.params;
     const { tipo_documento, documento, nombres, apellidos, especialidad, telefono, correo, cargo } = req.body;
     try {
@@ -316,7 +381,7 @@ app.put('/routes/empleado/:id', async (req, res) => {
 });
 
 // borrar un empleado de la lista
-app.delete('/routes/empleado/:id', async (req, res) => {
+router.delete('/api/empleado/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await pool.query('DELETE FROM empleado WHERE empleado_id=$1', [id]);
@@ -328,7 +393,7 @@ app.delete('/routes/empleado/:id', async (req, res) => {
 });
 
 // traer una lista de empleados desplegables
-app.get('/routes/listaempleados', async (req, res) => {
+router.get('/api/listaempleados', async (req, res) => {
     try {
         const result = await pool.query('SELECT empleado_id, nombres, apellidos, cargo FROM empleado ORDER BY nombres ASC');
         res.json(result.rows);
@@ -343,7 +408,7 @@ app.get('/routes/listaempleados', async (req, res) => {
 
 
 // traer la lista de los servicios disponibles
-app.get('/routes/servicios', async (req, res) => {
+router.get('/api/servicios', async (req, res) => {
     try {
         const result = await pool.query(
             'SELECT servicio_id, nombre, descripcion, precio_base, observaciones FROM servicio ORDER BY nombre ASC'
@@ -356,7 +421,7 @@ app.get('/routes/servicios', async (req, res) => {
 });
 
 // crear un servicio nuevo con su precio
-app.post('/routes/servicios', async (req, res) => {
+router.post('/api/servicios', async (req, res) => {
     const { nombre, descripcion, precio_base, observaciones } = req.body;
     try {
         const result = await pool.query(
@@ -365,13 +430,13 @@ app.post('/routes/servicios', async (req, res) => {
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
-        console.error('Error creating servicio:', error);
+        console.error('Error al crear el servicio:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 });
 
 // editar el nombre o precio de un servicio
-app.put('/routes/servicios/:id', async (req, res) => {
+router.put('/api/servicios/:id', async (req, res) => {
     const { id } = req.params;
     const { nombre, descripcion, precio_base, observaciones } = req.body;
     try {
@@ -392,7 +457,7 @@ app.put('/routes/servicios/:id', async (req, res) => {
 });
 
 // eliminar un servicio 
-app.delete('/routes/servicios/:id', async (req, res) => {
+router.delete('/api/servicios/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await pool.query('DELETE FROM servicio WHERE servicio_id=$1', [id]);
@@ -404,7 +469,7 @@ app.delete('/routes/servicios/:id', async (req, res) => {
 });
 
 // traer una lista de servicios desplegables
-app.get('/routes/listaservicios', async (req, res) => {
+router.get('/api/listaservicios', async (req, res) => {
     try {
         const result = await pool.query('SELECT servicio_id, nombre FROM servicio ORDER BY nombre ASC');
         res.json(result.rows);
@@ -419,7 +484,7 @@ app.get('/routes/listaservicios', async (req, res) => {
 
 
 // pedir todos los tickets y juntar la informacion 
-app.get('/routes/tickets', async (req, res) => {
+router.get('/api/tickets', async (req, res) => {
     try {
         const result = await pool.query(`
             SELECT 
@@ -450,7 +515,7 @@ app.get('/routes/tickets', async (req, res) => {
 });
 
 // crear un ticket nuevo para reportar un daño
-app.post('/routes/tickets', async (req, res) => {
+router.post('/api/tickets', async (req, res) => {
     const { fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id } = req.body;
     try {
         const result = await pool.query(
@@ -467,7 +532,7 @@ app.post('/routes/tickets', async (req, res) => {
 });
 
 // actualizar la informacion o estado de un ticket
-app.put('/routes/tickets/:id', async (req, res) => {
+router.put('/api/tickets/:id', async (req, res) => {
     const { id } = req.params;
     const { fecha_creacion, descripcion_falla, diagnostico, estado_ticket, observaciones, equipo_id, empleado_id } = req.body;
     try {
@@ -491,7 +556,7 @@ app.put('/routes/tickets/:id', async (req, res) => {
 });
 
 // borrar un ticket del sistema
-app.delete('/routes/tickets/:id', async (req, res) => {
+router.delete('/api/tickets/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await pool.query('DELETE FROM ticket WHERE ticket_id=$1', [id]);
@@ -507,7 +572,7 @@ app.delete('/routes/tickets/:id', async (req, res) => {
 
 
 // traer los clientes para los reportes
-app.get('/routes/reporteclientes', async (req, res) => {
+router.get('/api/reporteclientes', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM clientes');
         res.json(result.rows);
@@ -518,7 +583,7 @@ app.get('/routes/reporteclientes', async (req, res) => {
 });
 
 // traer los equipos para los reportes juntando sus marcas y clientes
-app.get('/routes/reporteequipos', async (req, res) => {
+router.get('/api/reporteequipos', async (req, res) => {
     try {
         const result = await pool.query(`
             SELECT e.equipo_id, e.tipo_equipo, e.modelo, e.referencia, e.numero_serie,
@@ -539,7 +604,7 @@ app.get('/routes/reporteequipos', async (req, res) => {
 
 
 // traer la lista de marcas desplegable
-app.get('/routes/marca', async (req, res) => {
+router.get('/api/marca', async (req, res) => {
     try {
         const result = await pool.query('SELECT marca_id, nombre FROM marca ORDER BY nombre ASC');
         res.json(result.rows);
@@ -552,9 +617,4 @@ app.get('/routes/marca', async (req, res) => {
 
 // INICIAR SERVIDORES
 
-
-// prender el servidor para que empiece a escuchar en el puerto 3000
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Servidor ejecutándose en el puerto ${PORT}`);
-});
+export default router;

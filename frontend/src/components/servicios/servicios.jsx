@@ -29,7 +29,7 @@ export default function Servicios() {
 
   // pedir los servicios al servidor apenas carga la pagina
   useEffect(() => {
-    fetch("http://localhost:3000/routes/servicios")
+    fetch("http://localhost:3000/api/servicios")
       .then((res) => res.json())
       .then((data) => setServicios(data))
       .catch((err) => console.error(err));
@@ -61,8 +61,8 @@ export default function Servicios() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const url = editingServicio
-      ? `http://localhost:3000/routes/servicios/${editingServicio.servicio_id}`
-      : "http://localhost:3000/routes/servicios";
+      ? `http://localhost:3000/api/servicios/${editingServicio.servicio_id}`
+      : "http://localhost:3000/api/servicios";
 
     const method = editingServicio ? "PUT" : "POST";
 
@@ -91,7 +91,7 @@ export default function Servicios() {
   // borrar el servicio de la base de datos definitivamente
   const confirmDelete = () => {
     if (itemToDelete) {
-      fetch(`http://localhost:3000/routes/servicios/${itemToDelete}`, {
+      fetch(`http://localhost:3000/api/servicios/${itemToDelete}`, {
         method: "DELETE",
       })
         .then(() => {

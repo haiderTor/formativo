@@ -14,26 +14,35 @@ export default function LoginPage() {
 
   const navigate = useNavigate();
 
+  // 🔹 Login con generación y almacenamiento de token
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:3000/login", {
+      const response = await fetch("http://localhost:3000/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo, contrasena }),
       });
 
-      if (!response.ok) {
-        throw new Error("Credenciales inválidas");
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Credenciales inválidas");
       }
+
+      // Guardar token en localStorage
+      localStorage.setItem("token", data.token);
+
+      // Redirigir al área protegida
       navigate("/app");
     } catch (err) {
       setError(err.message);
     }
   };
 
+  // 🔹 Registro de usuario
   const handleRegister = async (e) => {
     e.preventDefault();
     if (contrasenaRegistro !== verificacion) {
@@ -42,7 +51,7 @@ export default function LoginPage() {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/routes/usuario", {
+      const response = await fetch("http://localhost:3000/api/usuario", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -53,22 +62,22 @@ export default function LoginPage() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Error en el registro");
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Error en el registro");
       }
 
-      const data = await response.json();
-      console.log("Usuario registrado:", data);
-
+      alert("Usuario registrado correctamente");
       setShowModal(false);
-      navigate("/");
+      navigate("/login");
     } catch (err) {
       alert(err.message);
     }
   };
 
   return (
-    <div className="w-full h-screen bg-gradient-to-b from-black via-gray-900 to-orange-600 flex items-center justify-center p-6">
+    <div className="w-full h-screen bg-linear-to-b from-black via-gray-900 to-orange-600 flex items-center justify-center p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-6xl items-center">
         <div className="text-center md:text-left flex flex-col justify-center px-4">
           <h1 className="text-3xl md:text-4xl font-bold text-orange-400 mb-4">

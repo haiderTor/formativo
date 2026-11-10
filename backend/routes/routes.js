@@ -615,6 +615,6 @@ router.get('/api/marca', async (req, res) => {
 });
 
 
-// INICIAR SERVIDORES
+// INICIAR SERVIDOR
 
 export default router;

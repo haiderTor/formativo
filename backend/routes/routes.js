@@ -131,6 +131,7 @@ router.post('/login', async (req, res) => {
             success: false,
             error: 'Internal Server Error',
         });
+        console.error('Error en login:', error);
     }
 });
 

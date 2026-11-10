@@ -504,7 +504,7 @@ export default function Equipos() {
       {itemToDelete !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/60" onClick={() => setItemToDelete(null)} />
-          <div className="relative w-full max-w-sm bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-xl shadow-2xl border border-[#222] z-10 text-center">
+          <div className="relative w-full max-w-sm bg-linear-to-br from-gray-800 to-gray-900 p-6 rounded-xl shadow-2xl border border-[#222] z-10 text-center">
             <h3 className="text-lg font-bold text-white mb-2">¿Eliminar Equipo?</h3>
             <p className="text-gray-400 mb-6 text-sm">Esta acción no se puede deshacer.</p>
             <div className="flex items-center justify-center gap-3">

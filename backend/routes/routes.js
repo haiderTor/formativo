@@ -550,7 +550,7 @@ app.get('/routes/marca', async (req, res) => {
 });
 
 
-// INICIAR SERVIDOR
+// INICIAR SERVIDORES
 
 
 // prender el servidor para que empiece a escuchar en el puerto 3000
